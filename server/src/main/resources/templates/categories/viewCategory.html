@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Category</title>
+</head>
+<body>
+<div>
+    <p th:text="${'ID: ' + category.getId()}"></p>
+    <p th:text="${'Name: ' + category.getName()}"></p>
+    <p>Attributes: </p>
+    <div th:if="${category.getAttributes().size() > 0}">
+        <div th:each="attribute : ${category.getAttributes()}">
+            <p th:text="${attribute.getName()}" style="display: inline-block"></p>
+            <form th:method="POST" th:action="@{/categories/attribute/remove}" style="display: inline-block">
+                <input type="hidden" name="category_id" th:value="${category.getId()}">
+                <input type="hidden" name="attribute_id" th:value="${attribute.getId()}">
+                <input type="submit" value="Remove">
+            </form>
+        </div>
+    </div>
+    <div th:unless="${category.getAttributes().size() > 0}">
+        <p>No attributes</p>
+    </div>
+    <form th:method="POST" th:action="@{/categories/attribute/add}">
+        <input type="hidden" name="category_id" th:value="${category.getId()}">
+
+        <label for="attribute_name">Enter attribute name: </label>
+        <input type="text" name="attribute_name" id="attribute_name">
+        <input type="submit" value="Add">
+    </form>
+</div>
+</body>
+</html>
