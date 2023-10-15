@@ -1,0 +1,119 @@
+.products {
+    display: grid;
+    justify-content: center;
+    grid-gap: 40px;
+    grid-template-columns: repeat(3, 300px);
+    grid-auto-rows: 400px;
+}
+
+@media (max-width: 1100px) {
+    .products {
+        grid-template-columns: repeat(2, 300px);
+    }
+}
+
+@media (max-width: 800px) {
+    .products {
+        padding-left: 20%;
+        padding-right: 20%;
+        grid-template-columns: 1fr;
+    }
+}
+
+.item {
+    position: relative;
+    text-align: center;
+    box-shadow: 0 0 10px #ccc;
+    transition: 0.5s;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.item:hover {
+    margin-top: -15px;
+    margin-bottom: 15px;
+}
+.item::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(123, 0, 255, 0.4);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.item:hover::before {
+    animation: expandBackground 0.5s ease-in-out;
+    opacity: 1;
+}
+
+@keyframes expandBackground {
+    0% {
+        left: 50%;
+        width: 0;
+    }
+}
+
+.itemInfo {
+    /*flex: 1;*/
+    /*display: flex;*/
+    /*flex-direction: column;*/
+    /*justify-content: center;*/
+}
+
+.itemImageContainer {
+    /*max-width: 100%;*/
+    border-bottom: 1px solid #eaeaea;
+    /*width: auto;*/
+    height: 300px;
+}
+
+.itemImage {
+    /*max-width: 100%;*/
+    /*max-height: 300px;*/
+    /*object-fit: contain;*/
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.name {
+    color: #371E7B;
+    font-weight: 800;
+    font-size: 18px;
+}
+
+.price {
+    color: #2657F2;
+    font-weight: 700;
+    font-size: 15px;
+}
+
+.pagination {
+    margin: 50px 0;
+    display: flex;
+    justify-content: center;
+
+}
+
+.pagination button {
+    width: 40px;
+    height: 40px;
+    border: 0;
+    background-color: #2657F2;
+    border-radius: 5px;
+    color: white;
+    font-weight: 800;
+    font-size: 16px;
+    margin-right: 10px;
+    transition: 0.5s;
+}
+
+.pagination button:hover, .pagination button:focus {
+    cursor: pointer;
+    background-color: #371E7B;
+}

@@ -1,0 +1,92 @@
+@keyframes rotateSphere {
+    0% {
+        transform: rotateY(0deg);
+    }
+    50% {
+        transform: rotateY(180deg);
+    }
+    100% {
+        transform: rotateY(360deg);
+    }
+}
+
+.sphere {
+    position: absolute;
+    left: 55%;
+    top: 45%;
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(to bottom, #c83ad3, #c757ea);
+    /*background: linear-gradient(to bottom, #B171C5, #AD7FC3);*/
+    border-radius: 50%;
+    animation: rotateSphere 5s linear infinite;
+    z-index: -1;
+}
+
+@keyframes rotateSphere2 {
+    0% {
+        transform: rotateY(0deg);
+        background: linear-gradient(to right, #96deb3, #30915d);
+    }
+    50% {
+        transform: rotateY(180deg);
+        background: linear-gradient(to left, #30915d, #96deb3);
+    }
+    100% {
+        transform: rotateY(360deg);
+        background: linear-gradient(to right, #96deb3, #30915d);
+    }
+}
+
+.sphere2 {
+    position: absolute;
+    left: 30%;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    animation: rotateSphere2 10s linear infinite;
+}
+
+
+.diamond-container {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    margin: 300px;
+}
+
+.square {
+    width: 50px;
+    height: 50px;
+    border: 3px solid #e7e116;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: moveSquare 10s linear infinite;
+    animation-fill-mode: forwards;
+    z-index: -1;
+}
+
+@keyframes moveSquare {
+    0% {
+        left: 50%;
+        top: 0;
+    }
+    25% {
+        left: 100%;
+        top: 50%;
+    }
+    50% {
+        left: 50%;
+        top: 100%;
+    }
+    75% {
+        left: 0;
+        top: 50%;
+    }
+    100% {
+        left: 50%;
+        top: 0;
+    }
+}

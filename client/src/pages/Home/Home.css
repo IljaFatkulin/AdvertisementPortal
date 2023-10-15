@@ -1,0 +1,20 @@
+.container1 {
+    padding-left: 10%;
+
+    height: 100vh;
+    background: linear-gradient(to bottom, #9957E7, #2455F3);
+    background-repeat: no-repeat;
+    background-size: cover;
+    --mask:
+            radial-gradient(45.72px at 50% calc(100% - 64.50px),#000 99%,#0000 101%) calc(50% - 60px) 0/120px 100%,
+            radial-gradient(45.72px at 50% calc(100% + 34.50px),#0000 99%,#000 101%) 50% calc(100% - 30px)/120px 100% repeat-x;
+    -webkit-mask: var(--mask);
+    mask: var(--mask);
+}
+
+.text {
+    font-family: "Nunito", sans-serif;
+    font-weight: 900;
+    text-transform: capitalize;
+    font-size: 35px;
+}

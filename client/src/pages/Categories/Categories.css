@@ -1,0 +1,42 @@
+.content {
+    height: 100vh;
+    display: grid;
+    /*place-content: center;*/
+    /*align-items: center;*/
+    justify-content: center;
+    grid-template-columns: repeat(4, minmax(100px, 300px));
+    grid-auto-rows: 65px;
+}
+
+
+.category {
+    text-align: center;
+}
+
+.category img {
+    cursor: pointer;
+    margin-left: 10px;
+    width: 20px;
+    height: 20px;
+}
+
+.category img:hover {
+    width: 25px;
+    height: 25px;
+    transition: 1s;
+    transform: rotateZ(180deg);
+}
+
+.category .link {
+    font-family: "Nunito",sans-serif;
+    font-weight: 800;
+    font-size: 24px;
+    color: #271273;
+    text-decoration: none;
+}
+
+.category .link:hover {
+    font-size: 28px;
+    color: #e929fc;
+    transition: 0.5s;
+}

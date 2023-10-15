@@ -1,0 +1,114 @@
+.advertisement {
+    padding: 50px 10%;
+    display: grid;
+}
+
+.advertisementMain {
+    display: grid;
+    grid-gap: 30px;
+    grid-template-columns: repeat(2, minmax(400px, 600px));
+}
+
+@media (max-width: 800px) {
+    .advertisementMain {
+        grid-template-columns: repeat(1, 1fr);
+    }
+}
+
+.advertisementImgContainer {
+    max-height: 500px;
+    box-shadow: 0 0 10px #ccc;
+    /*background-size: contain;*/
+    /*background-position: center;*/
+    /*background-repeat: no-repeat;*/
+}
+
+.advertisementImg {
+    object-fit: contain;
+    height: 100%;
+    width: 100%;
+}
+
+.advertisementMainInfo {
+
+}
+
+.advertisementMainInfo .name {
+    color: #371E7B;
+    font-weight: 800;
+    font-size: 24px;
+}
+
+.advertisementMainInfo .price {
+    margin-top: -10px;
+    color: black;
+    font-weight: 800;
+}
+
+.advertisementMainInfo .description {
+    font-weight: 600;
+}
+
+.advertisementAttributes {
+    margin-top: 50px;
+    padding: 25px;
+    border: 1px solid #eaeaea;
+}
+
+.advertisementAttributes table {
+    border: 1px solid #eaeaea;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.advertisementAttributes table td {
+    border-bottom: 1px solid #eaeaea;
+    padding: 10px 10px;
+}
+
+.advertisementAttributes table .tdName {
+    width: 350px;
+    color: #371E7B;
+    font-weight: 900;
+}
+
+.adminButtons {
+    width: 100%;
+    padding: 0 0 40px 0;
+}
+
+.adminButtons button {
+    position: relative;
+    cursor: pointer;
+    background-color: #2154F2;
+    padding: 0 40px;
+    height: 40px;
+    margin-right: 10px;
+    border: 0;
+    border-radius: 5px;
+}
+
+.adminButtons button::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: #9457E8;
+    border-radius: 5px;
+    opacity: 0;
+}
+
+.adminButtons button:hover::before {
+    transition: 0.25s linear;
+    opacity: 1;
+}
+
+.adminButtons button p {
+    position: relative;
+    margin: 0;
+    color: white;
+    font-weight: 600;
+    font-size: 16px;
+}

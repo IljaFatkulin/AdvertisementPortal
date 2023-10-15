@@ -1,0 +1,71 @@
+.navbar {
+    display: flex;
+    align-items: center;
+    height: 80px;
+    color: white;
+    font-weight: 700;
+    justify-content: space-between;
+}
+
+.navbarBrand p {
+    font-size: 35px;
+    font-weight: 900;
+}
+
+.navbarMain {
+    margin-left: auto;
+    width: 500px;
+    display: flex;
+    font-size: 18px;
+    justify-content: space-between;
+}
+
+.navbarMain .link {
+    text-decoration: none;
+    color: white;
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.navbarMain .link::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 6px;
+    background-color: white;
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.navbarMain .link:hover::after {
+    opacity: 1;
+}
+
+.navbarRight {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.navbarRight button {
+    width: 100px;
+    height: 40px;
+    border-radius: 5px;
+    background-color: #2154F2;
+    border: 0;
+    color: white;
+    font-weight: 600;
+    font-family: "Nunito", sans-serif;
+    font-size: 18px;
+    transition: 0.75s;
+}
+
+.navbarRight button:hover, button:focus {
+    cursor: pointer;
+    color: #2154F2;
+    box-shadow: inset -3.5em 0 0 0 white, inset 3.5em 0 0 0 white;
+}

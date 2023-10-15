@@ -1,0 +1,60 @@
+.formCreate {
+    display: grid;
+    justify-content: center;
+    padding-top: 50px;
+}
+
+.formCreate form {
+    border: 1px solid #eaeaea;
+    padding: 30px 100px 30px 50px;
+    width: 600px;
+}
+
+.formCreate p {
+    margin-bottom: 2px;
+    font-weight: 600;
+    color: #2154F2;
+}
+
+.formCreate input {
+    width: 100%;
+    border: 1px solid #eaeaea;
+    padding: 20px;
+}
+
+.formCreate input:focus {
+    outline: none;
+    border: 1px solid #2154F2;
+}
+
+.formCreate .buttons {
+    margin-top: 20px;
+}
+
+.formCreate button {
+    width: 107%;
+    height: 40px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    background-color: #2154F2;
+    border: 0;
+    color: white;
+    font-weight: 600;
+    font-family: "Nunito", sans-serif;
+    font-size: 18px;
+    transition: 0.5s;
+}
+
+.formCreate button:hover, .formCreate button:focus {
+    cursor: pointer;
+    background-color: #000b96;
+}
+
+.formCreate .save {
+    background-color: #3ccc3e;
+}
+
+.formCreate .save:hover, .formCreate .save:focus {
+    cursor: pointer;
+    background-color: #2a8f2f;
+}
