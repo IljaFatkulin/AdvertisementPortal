@@ -1,10 +1,13 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {useParams} from "react-router-dom";
 import Loader from "../../../components/Loader/Loader";
 import CategoryService from "../../../api/CategoryService";
 import NotFound from "../../NotFound/NotFound";
+import {UserDetailsContext} from "../../../context/UserDetails";
 
 const CategoryView = () => {
+    const {userDetails} = useContext(UserDetailsContext);
+
     const {id} = useParams();
     const [error, setError] = useState();
 
@@ -32,7 +35,7 @@ const CategoryView = () => {
     }, []);
 
     const removeAttribute = (attributeId) => {
-        CategoryService.removeAttribute(id, attributeId)
+        CategoryService.removeAttribute(id, attributeId, userDetails)
             .then(response => {
                 fetchCategoryInfo();
             });
@@ -41,7 +44,7 @@ const CategoryView = () => {
     const addAttribute = (e) => {
         e.preventDefault();
 
-        CategoryService.addAttribute(id, attributeName)
+        CategoryService.addAttribute(id, attributeName, userDetails)
             .then(response => {
                 fetchCategoryInfo();
             });

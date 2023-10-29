@@ -1,16 +1,19 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import CategoryService from "../../../api/CategoryService";
 import styles from '../../Advertisements /AdvertisementCreate/AdvertisementCreate.module.css';
 import Navbar from "../../../components/Navbar/Navbar";
 import {Link} from "react-router-dom";
+import {UserDetailsContext} from "../../../context/UserDetails";
 
 const CategoryCreate = () => {
+    const {userDetails} = useContext(UserDetailsContext);
+
     const [name, setName] = useState("");
 
     function handleSubmit(e) {
         e.preventDefault();
 
-        CategoryService.create(name)
+        CategoryService.create(name, userDetails)
             .then(response => {
                 console.log(response);
             })

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {Link, useNavigate, useParams} from "react-router-dom";
 import AdvertisementService from "../../../api/AdvertisementService";
 import Loader from "../../../components/Loader/Loader";
@@ -6,21 +6,24 @@ import NotFound from "../../NotFound/NotFound";
 import Navbar from "../../../components/Navbar/Navbar";
 import styles from './AdvertisementView.module.css';
 import ImageConverter from "../../../components/ImageConverter/ImageConverter";
+import {UserDetailsContext} from "../../../context/UserDetails";
+import useAuth from "../../../hooks/useAuth";
 
 const AdvertisementView = () => {
+    const {isAdmin} = useAuth();
+    const {userDetails} = useContext(UserDetailsContext);
+
     const {category, id} = useParams();
     const [isLoading, setIsLoading] = useState(true);
-    const [advertisement, setAdvertisement] = useState();
+    const [advertisement, setAdvertisement] = useState({});
     const navigate = useNavigate();
     const [error, setError] = useState();
-
-    const [imageUrl, setImageUrl] = useState("");
 
     useEffect(() => {
         AdvertisementService.getById(id)
             .then(response => {
                 setAdvertisement(response);
-                setImageUrl(`data:image/png;base64, ${response.avatar}`);
+                // setImageUrl(`data:image/png;base64, ${response.avatar}`);
 
                 setIsLoading(false);
             })
@@ -31,8 +34,8 @@ const AdvertisementView = () => {
     }, []);
 
     function deleteAdvertisement(id) {
-        AdvertisementService.deleteById(id)
-            .then(response => {
+        AdvertisementService.deleteById(id, userDetails)
+            .then(() => {
                 navigate("/advertisements/" + category);
             });
     }
@@ -58,13 +61,14 @@ const AdvertisementView = () => {
                         </div>
                     </div>
                     <div className={styles.advertisement}>
-                        <div className={styles.adminButtons}>
-                            <Link to={'/advertisements/' + category + '/' + id + '/edit'}><button><p>Edit</p></button></Link>
-                            <button onClick={() => deleteAdvertisement(id)}><p>Delete</p></button>
-                        </div>
+                        {(isAdmin() || (advertisement.seller && advertisement.seller.id === userDetails.id)) &&
+                            <div className={styles.adminButtons}>
+                                <Link to={'/advertisements/' + category + '/' + id + '/edit'}><button><p>Edit</p></button></Link>
+                                <button onClick={() => deleteAdvertisement(id)}><p>Delete</p></button>
+                            </div>
+                        }
                         <div className={styles.advertisementMain}>
                             <div className={styles.advertisementImgContainer}>
-                                {/*style={{ backgroundImage: `url("${imageUrl}")` }}*/}
                                 {advertisement.avatar
                                 ?
                                     <ImageConverter className={styles.advertisementImg} data={advertisement.avatar}/>
@@ -76,6 +80,7 @@ const AdvertisementView = () => {
                                 <p className={"name"}>{advertisement.name}</p>
                                 <p className={"price"}>€{advertisement.price}</p>
                                 <p className={"description"}>{advertisement.description}</p>
+                                <p className={"seller"}>Seller: {advertisement.seller && advertisement.seller.email}</p>
                             </div>
                         </div>
                                 {advertisement.attributes.length

@@ -7,9 +7,13 @@ import AdvertisementEdit from "../pages/Advertisements /AdvertisementEdit/Advert
 import NotFound from "../pages/NotFound/NotFound";
 import Home from "../pages/Home/Home";
 import Categories from "../pages/Categories/Categories";
+import SignUp from "../pages/Authorization/SignUp";
+import SignIn from "../pages/Authorization/SignIn";
 
 export const publicRoutes = [
     {path: '/', element: <Home/>},
+    {path: '/register', element: <SignUp/>},
+    {path: '/login', element: <SignIn/>},
     {path: '/categories', element: <Categories/>},
 
     {path: '/error/notfound', element: <NotFound/>},

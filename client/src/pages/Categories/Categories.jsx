@@ -4,8 +4,11 @@ import Loader from "../../components/Loader/Loader";
 import {Link, useNavigate} from "react-router-dom";
 import './Categories.css';
 import Navbar from "../../components/Navbar/Navbar";
+import useAuth from "../../hooks/useAuth";
 
 const Categories = () => {
+    const { isAdmin } = useAuth();
+
     const [isLoading, setIsLoading] = useState(true);
     const [categories, setCategories] = useState([]);
 
@@ -36,16 +39,18 @@ const Categories = () => {
                     <Navbar/>
                     <h1>Categories</h1>
                 </div>
-                <Link to={'/categories/create'} className={"create"}>
-                    <button className={"button-create"}>Create</button>
-                </Link>
+                {isAdmin() &&
+                    <Link to={'/categories/create'} className={"create"}>
+                        <button className={"button-create"}>Create</button>
+                    </Link>
+                }
                 <div className={"content"}>
                     {categories.length
                         ?
                         categories.map(category =>
                             <div className={"category"} key={category.id}>
                                 <Link className={"link"} to={'/advertisements/' + category.name}>{category.name}</Link>
-                                <img src="img/settings.png" onClick={() => view(category.id)}></img>
+                                {isAdmin() && <img src="img/settings.png" onClick={() => view(category.id)} alt={""}></img>}
                             </div>
                         )
                         :

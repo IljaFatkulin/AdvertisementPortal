@@ -1,12 +1,14 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import AdvertisementService from "../../../api/AdvertisementService";
 import {Link, useNavigate, useParams} from "react-router-dom";
 import Loader from "../../../components/Loader/Loader";
 import Navbar from "../../../components/Navbar/Navbar";
-// import './AdvertisementEdit.css';
 import styles from '../AdvertisementCreate/AdvertisementCreate.module.css';
+import {UserDetailsContext} from "../../../context/UserDetails";
 
 const AdvertisementEdit = () => {
+    const {userDetails} = useContext(UserDetailsContext);
+
     const [isLoading, setIsLoading] = useState(true);
     const [product, setProduct] = useState();
     const [attributes, setAttributes] = useState([]);
@@ -47,9 +49,8 @@ const AdvertisementEdit = () => {
     function handleSubmit(e) {
         e.preventDefault();
 
-        AdvertisementService.edit(product, attributes, id)
+        AdvertisementService.edit(product, attributes, id, userDetails)
             .then(response => {
-                console.log(response);
                 if(response.data === 'OK') {
                     navigate('/advertisements/' + category + '/' + id);
                 }

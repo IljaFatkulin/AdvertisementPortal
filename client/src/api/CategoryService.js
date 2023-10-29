@@ -1,17 +1,15 @@
-import axios from "axios";
+import { myAxios, addAuthHeader } from "../config/axiosConfig";
 
 export default class CategoryService {
-    static url = 'http://localhost:8080';
-
-    static async getAll() {
-        return await axios.get( this.url +'/categories')
+    static getAll() {
+        return myAxios.get( '/categories')
             .then(response => {
                 return response.data;
             });
     }
 
-    static async getCategoryInfo(id) {
-        return await axios.get(this.url + '/categories/' + id)
+    static getCategoryInfo(id) {
+        return myAxios.get('/categories/' + id)
             .then(response => {
                 return response.data;
             })
@@ -20,8 +18,9 @@ export default class CategoryService {
             })
     }
 
-    static async create(name) {
-        return await axios.post(this.url + '/categories/create', {
+    static create(name, userDetails) {
+        addAuthHeader(userDetails);
+        return myAxios.post('/categories/create', {
             name: name
         })
             .then(response => {
@@ -29,8 +28,9 @@ export default class CategoryService {
             })
     }
 
-    static async removeAttribute(categoryId, attributeId) {
-        return await axios.post(this.url + '/categories/attribute/remove', {
+    static removeAttribute(categoryId, attributeId, userDetails) {
+        addAuthHeader(userDetails);
+        return myAxios.post('/categories/attribute/remove', {
             categoryId: categoryId,
             attributeId: attributeId
         })
@@ -39,8 +39,9 @@ export default class CategoryService {
             })
     }
 
-    static async addAttribute(categoryId, attributeName) {
-        return await axios.post(this.url + '/categories/attribute/add', {
+    static addAttribute(categoryId, attributeName, userDetails) {
+        addAuthHeader(userDetails);
+        return myAxios.post('/categories/attribute/add', {
             categoryId: categoryId,
             attributeName: attributeName
         })

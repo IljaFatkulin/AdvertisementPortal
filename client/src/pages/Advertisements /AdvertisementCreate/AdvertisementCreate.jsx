@@ -1,10 +1,13 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {Link, useNavigate, useParams} from "react-router-dom";
 import AdvertisementService from "../../../api/AdvertisementService";
 import Navbar from "../../../components/Navbar/Navbar";
 import styles from './AdvertisementCreate.module.css';
+import {UserDetailsContext} from "../../../context/UserDetails";
 
 const AdvertisementCreate = () => {
+    const {userDetails} = useContext(UserDetailsContext);
+
     const {category} = useParams();
     const [product, setProduct] = useState({
         name: "",
@@ -26,8 +29,7 @@ const AdvertisementCreate = () => {
             setErrors([...errors, "Image is required"]);
             return;
         }
-
-        AdvertisementService.create(product, attributes, category)
+        AdvertisementService.create(product, attributes, category, userDetails)
             .then(response => {
                 if(response.status === 201) {
                     navigate('/advertisements/' + category);

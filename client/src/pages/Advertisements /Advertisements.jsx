@@ -6,13 +6,15 @@ import NotFound from "../NotFound/NotFound";
 import Navbar from "../../components/Navbar/Navbar";
 import styles from './Advertisements.module.css';
 import ImageConverter from "../../components/ImageConverter/ImageConverter";
+import useAuth from "../../hooks/useAuth";
 
 const Advertisements = () => {
+    const {isAuth} = useAuth();
+
     const [error, setError] = useState();
     const {category} = useParams();
     const [isLoading, setIsLoading] = useState(true);
     const [advertisements, setAdvertisements] = useState([]);
-    const [img, setImg] = useState("");
 
     const [pagesCount, setPagesCount] = useState(0);
     const [currentPage, setCurrentPage] = useState(0);
@@ -54,19 +56,12 @@ const Advertisements = () => {
     }, [pages])
 
     useEffect(() => {
-        // AdvertisementService.test()
-        //     .then(response => {
-        //         setImg(response);
-
-                AdvertisementService.getCount(category)
-                    .then(response => {
-                        let p = Math.ceil(response/12);
-                        setPagesCount(p);
-                        changePage(0, p);
-                        fetchAdvertisements();
-                    })
-            // })
-
+        AdvertisementService.getCount(category)
+            .then(response => {
+                let p = Math.ceil(response/12);
+                setPagesCount(p);
+                changePage(0, p);
+            })
     }, []);
 
     useEffect(() => {
@@ -109,9 +104,11 @@ const Advertisements = () => {
                             <p>{category}</p>
                         </div>
                     </div>
-                    <Link to={'/advertisements/' + category + '/create'} className={"create"}>
-                        <button className={"button-create"}>Create</button>
-                    </Link>
+                    {isAuth &&
+                        <Link to={'/advertisements/' + category + '/create'} className={"create"}>
+                            <button className={"button-create"}>Create</button>
+                        </Link>
+                    }
 
                     <div className={styles.products}>
                         {advertisements.length
