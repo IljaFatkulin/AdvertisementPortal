@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Main page</title>
+</head>
+<body>
+<div th:each="category : ${categories}">
+    <a th:text="${category.getName()}" th:href="@{/products?category={name}(name=${category.getName()})}"></a>
+    <a th:href="@{/categories/{id}(id=${category.getId()})}"><button>View</button></a>
+</div>
+
+<a th:href="@{/categories/create}">Create new category</a>
+</body>
+</html>
