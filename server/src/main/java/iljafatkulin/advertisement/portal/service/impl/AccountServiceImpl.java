@@ -1,5 +1,6 @@
 package iljafatkulin.advertisement.portal.service.impl;
 
+import iljafatkulin.advertisement.portal.exception.AccountNotFoundException;
 import iljafatkulin.advertisement.portal.exception.EmailAlreadyTaken;
 import iljafatkulin.advertisement.portal.model.Account;
 import iljafatkulin.advertisement.portal.model.Role;
@@ -38,7 +39,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     public Account authenticateUser(String email, String password) {
-        Account account = accountRepository.findByEmail(email);
+        Account account = accountRepository.findByEmail(email).orElseThrow(AccountNotFoundException::new);
         if(account == null) {
             throw new UsernameNotFoundException("User not found");
         }
@@ -57,7 +58,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Account findByEmail(String email) {
-        return accountRepository.findByEmail(email);
+        return accountRepository.findByEmail(email).orElseThrow(AccountNotFoundException::new);
     }
 
     @Override

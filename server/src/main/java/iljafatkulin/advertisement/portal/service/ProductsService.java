@@ -1,5 +1,6 @@
 package iljafatkulin.advertisement.portal.service;
 
+import iljafatkulin.advertisement.portal.exception.AccountNotFoundException;
 import iljafatkulin.advertisement.portal.exception.ProductNotFoundException;
 import iljafatkulin.advertisement.portal.model.Account;
 import iljafatkulin.advertisement.portal.model.Product;
@@ -62,7 +63,7 @@ public class ProductsService {
             product.setAvatarPath(saveImage(image));
         }
 
-        Account account = accountRepository.findByEmail(sellerEmail);
+        Account account = accountRepository.findByEmail(sellerEmail).orElseThrow(AccountNotFoundException::new);
         product.setSeller(account);
 
         product.setCreatedAt(new Date());

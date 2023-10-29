@@ -16,23 +16,24 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class UserDetailsServiceImpl implements UserDetailsService {
+//public class UserDetailsServiceImpl implements UserDetailsService {
+public class UserDetailsServiceImpl {
     private final AccountService accountService;
 
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Account account = accountService.findByEmail(email);
-        if(account == null) {
-            throw new UsernameNotFoundException("User" + email + " not found");
-        }
-        if(account.getRoles() == null || account.getRoles().isEmpty()) {
-            throw new RuntimeException("User has no roles");
-        }
-
-        Collection<GrantedAuthority> authorities = account.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
-
-        return new User(account.getEmail(), account.getPassword(), account.isEnabled(),
-                !account.isExpired(), !account.isCredentialsExpired(), !account.isLocked(), authorities);
-    }
+//    @Override
+//    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+//        Account account = accountService.findByEmail(email);
+//        if(account == null) {
+//            throw new UsernameNotFoundException("User" + email + " not found");
+//        }
+//        if(account.getRoles() == null || account.getRoles().isEmpty()) {
+//            throw new RuntimeException("User has no roles");
+//        }
+//
+//        Collection<GrantedAuthority> authorities = account.getRoles().stream()
+//                .map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
+//
+//        return new User(account.getEmail(), account.getPassword(), account.isEnabled(),
+//                !account.isExpired(), !account.isCredentialsExpired(), !account.isLocked(), authorities);
+//    }
 }
