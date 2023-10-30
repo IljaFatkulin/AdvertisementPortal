@@ -1,15 +1,16 @@
 package iljafatkulin.advertisement.portal.resource;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import iljafatkulin.advertisement.portal.dto.AttributeValueDTO;
 import iljafatkulin.advertisement.portal.dto.ProductDTO;
 import iljafatkulin.advertisement.portal.dto.ProductDetailsDTO;
-import iljafatkulin.advertisement.portal.request.FormCreateProduct;
-import iljafatkulin.advertisement.portal.request.FormEditProduct;
 import iljafatkulin.advertisement.portal.model.Attribute;
 import iljafatkulin.advertisement.portal.model.Category;
 import iljafatkulin.advertisement.portal.model.Product;
+import iljafatkulin.advertisement.portal.request.FormCreateProduct;
+import iljafatkulin.advertisement.portal.request.FormEditProduct;
 import iljafatkulin.advertisement.portal.service.AttributesService;
 import iljafatkulin.advertisement.portal.service.CategoriesService;
 import iljafatkulin.advertisement.portal.service.ProductsService;
@@ -24,7 +25,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StreamUtils;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Validator;
@@ -35,9 +35,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
-
-import com.fasterxml.jackson.core.type.TypeReference;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/products")

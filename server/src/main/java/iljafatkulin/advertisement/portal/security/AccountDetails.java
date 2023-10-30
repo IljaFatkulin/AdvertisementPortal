@@ -1,18 +1,16 @@
 package iljafatkulin.advertisement.portal.security;
 
 import iljafatkulin.advertisement.portal.model.Account;
-import iljafatkulin.advertisement.portal.model.Role;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
+@Getter
 public class AccountDetails implements UserDetails {
     private final Account account;
 
@@ -51,9 +49,5 @@ public class AccountDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
-    }
-
-    public Account getAccount() {
-        return account;
     }
 }

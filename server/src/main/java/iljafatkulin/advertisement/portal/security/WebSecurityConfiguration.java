@@ -15,6 +15,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -26,6 +27,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class WebSecurityConfiguration {
     private final AccountAuthenticationProvider authenticationProvider;
     private final AccountDetailsService accountDetailsService;
+    private final JWTFilter jwtFilter;
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -59,13 +61,15 @@ public class WebSecurityConfiguration {
                                 .anyRequest().hasAnyRole("USER", "ADMIN")
 
                                 .and()
-                                .httpBasic(Customizer.withDefaults())
+//                                .httpBasic(Customizer.withDefaults())
                                 .sessionManagement()
                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
                 });
+
+        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
