@@ -20,4 +20,15 @@ export default class AccountService {
             return response
         })
     }
+
+    static verifyWithToken(token) {
+        return myAxios.post('/accounts/verify', {
+            token: token
+        }).then(response => {
+            console.log(response.data)
+            return response;
+        }).catch(error => {
+            throw error;
+        })
+    }
 }

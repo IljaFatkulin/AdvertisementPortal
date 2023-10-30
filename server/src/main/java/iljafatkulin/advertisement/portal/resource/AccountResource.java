@@ -1,5 +1,7 @@
 package iljafatkulin.advertisement.portal.resource;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import iljafatkulin.advertisement.portal.exception.AccountNotFoundException;
 import iljafatkulin.advertisement.portal.exception.EmailAlreadyTaken;
 import iljafatkulin.advertisement.portal.model.Account;
 import iljafatkulin.advertisement.portal.request.LoginRequest;
@@ -9,10 +11,7 @@ import iljafatkulin.advertisement.portal.util.ResourceUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -58,6 +57,22 @@ public class AccountResource {
             HttpStatus status = HttpStatus.UNAUTHORIZED; // 401
 
             return new ResponseEntity<>(errorMessage, status);
+        }
+    }
+
+    @PostMapping("/verify")
+    public ResponseEntity<?> verifyToken(@RequestBody Map<String, String> requestBody) {
+        String token = requestBody.get("token");
+        try {
+            String email = jwtUtil.validateTokenAndRetrieveClaim(token);
+
+            Account account = accountService.findByEmail(email);
+
+            return ResponseEntity.ok(account);
+        } catch (JWTVerificationException e) {
+            return new ResponseEntity<>("Invalid JWT token", HttpStatus.UNAUTHORIZED);
+        } catch (AccountNotFoundException e) {
+            return new ResponseEntity<>("Account not found", HttpStatus.NOT_FOUND);
         }
     }
 }

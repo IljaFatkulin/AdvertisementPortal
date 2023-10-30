@@ -53,8 +53,7 @@ public class WebSecurityConfiguration {
                 .authorizeHttpRequests(auth -> {
                     try {
                         auth
-                                .requestMatchers(HttpMethod.POST, "/api/accounts/authenticate").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/api/accounts/create").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/accounts/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
                                 .requestMatchers("/**").authenticated()

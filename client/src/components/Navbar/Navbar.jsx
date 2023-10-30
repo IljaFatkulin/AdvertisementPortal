@@ -2,9 +2,18 @@ import React, {useContext} from 'react';
 import styles from './Navbar.module.css';
 import {Link} from "react-router-dom";
 import {UserDetailsContext} from "../../context/UserDetails";
+import {useCookies} from "react-cookie";
 
 const Navbar = () => {
-    const {isAuth, userDetails} = useContext(UserDetailsContext);
+    const [cookie, setCookie, removeCookie] = useCookies(['token']);
+    const {isAuth, setIsAuth, setUserDetails} = useContext(UserDetailsContext);
+
+    function logout() {
+        removeCookie('token');
+        setUserDetails({});
+        setIsAuth(false);
+
+    }
 
     return (
         <div className={styles.navbar}>
@@ -20,7 +29,7 @@ const Navbar = () => {
             <div className={styles.navbarRight}>
                 {isAuth
                 ?
-                    <Link to={''}><button>Profile</button></Link>
+                    <Link to={''}><button onClick={logout}>Profile</button></Link>
                 :
                     <Link to={'/register'}><button>Sign Up</button></Link>
                 }
