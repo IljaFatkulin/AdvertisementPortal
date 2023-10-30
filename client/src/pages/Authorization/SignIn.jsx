@@ -8,7 +8,7 @@ const SignIn = () => {
     const {setUserDetails, setIsAuth} = useContext(UserDetailsContext);
     const [form, setForm] = useState({
         email: "",
-        password: "",
+        password: ""
     });
 
     const [errors, setErrors] = useState([]);
@@ -24,10 +24,10 @@ const SignIn = () => {
                     if(response.status === 200) {
                         // setUserDetails({email: form.email, password: form.password});
                         setUserDetails({
-                            id: response.data.id,
+                            id: response.data.account.id,
                             email: form.email,
-                            password: form.password,
-                            roles: response.data.roles.map((role) => role.name)
+                            token: response.data.token,
+                            roles: response.data.account.roles.map((role) => role.name)
                         });
                         setIsAuth(true);
                         navigate('/');

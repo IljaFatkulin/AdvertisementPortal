@@ -5,7 +5,8 @@ const myAxios = axios.create({
 });
 
 const addAuthHeader = (userDetails) => {
-    myAxios.defaults.headers.common['Authorization'] = 'Basic ' + btoa(userDetails.email + ':' + userDetails.password);
+    // myAxios.defaults.headers.common['Authorization'] = 'Basic ' + btoa(userDetails.email + ':' + userDetails.password);
+    myAxios.defaults.headers.common['Authorization'] = `Bearer ${userDetails.token}`;
 };
 
 export { myAxios, addAuthHeader };

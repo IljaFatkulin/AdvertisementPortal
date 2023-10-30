@@ -7,8 +7,10 @@ import {UserDetailsContext} from "./context/UserDetails";
 
 function App() {
     const [userDetails, setUserDetails] = useState({
+        id: "",
         email: "",
-        password: ""
+        token: "",
+        roles: []
     });
     const [isAuth, setIsAuth] = useState(false);
 

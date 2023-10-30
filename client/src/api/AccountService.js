@@ -1,4 +1,4 @@
-import { myAxios, addAuthHeader } from "../config/axiosConfig";
+import { myAxios } from "../config/axiosConfig";
 
 export default class AccountService {
     static register(user) {

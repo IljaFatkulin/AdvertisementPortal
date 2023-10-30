@@ -51,7 +51,7 @@ public class AccountResource {
             Map<String, Object> response = new HashMap<>();
             response.put("account", account);
             response.put("token", token);
-            
+
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             String errorMessage = e.getMessage();
