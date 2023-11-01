@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import {Link, useNavigate, useParams} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 import Loader from "../../components/Loader/Loader";
 import AdvertisementService from "../../api/AdvertisementService";
 import NotFound from "../NotFound/NotFound";
 import Navbar from "../../components/Navbar/Navbar";
 import styles from './Advertisements.module.css';
-import ImageConverter from "../../components/ImageConverter/ImageConverter";
 import useAuth from "../../hooks/useAuth";
+import AdvertisementCard from "../../components/AdvertisementCard/AdvertisementCard";
 
 const Advertisements = () => {
     const {isAuth} = useAuth();
@@ -21,8 +21,6 @@ const Advertisements = () => {
     const [pages, setPages] = useState({start: 0, end: 0});
 
     const [buttons, setButtons] = useState([]);
-
-    const navigate = useNavigate();
 
     function changePage(page, count) {
         setCurrentPage(page);
@@ -82,10 +80,6 @@ const Advertisements = () => {
             })
     }
 
-    function view(id) {
-        navigate('/advertisements/' + category + '/' + id);
-    }
-
     return (
         isLoading
         ?
@@ -114,21 +108,11 @@ const Advertisements = () => {
                         {advertisements.length
                         ?
                             advertisements.map(advertisement =>
-                                <div className={styles.item} onClick={() => view(advertisement.id)} key={advertisement.id}>
-                                    <div className={styles.itemImageContainer}>
-                                        {advertisement.avatar
-                                        ?
-                                            <ImageConverter className={styles.itemImage} data={advertisement.avatar} />
-                                        :
-                                            <p>No image</p>
-                                        }
-                                        {/*<img style={{maxWidth: '100%', maxHeight: '300px', objectFit: "contain"}} src={img} alt="1"/>*/}
-                                    </div>
-                                    <div className={styles.itemInfo}>
-                                        <p className={styles.name}>{advertisement.name}</p>
-                                        <p className={styles.price}>€{advertisement.price}</p>
-                                    </div>
-                                </div>
+                                <AdvertisementCard
+                                    key={advertisement.id}
+                                    advertisement={advertisement}
+                                    category={category}
+                                />
                             )
                         :
                             <p>Advertisements not found</p>

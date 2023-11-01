@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import CategoryService from "../../api/CategoryService";
 import Loader from "../../components/Loader/Loader";
 import {Link, useNavigate} from "react-router-dom";
-import './Categories.css';
+import styles from "./Categories.module.css";
 import Navbar from "../../components/Navbar/Navbar";
 import useAuth from "../../hooks/useAuth";
 
@@ -44,12 +44,12 @@ const Categories = () => {
                         <button className={"button-create"}>Create</button>
                     </Link>
                 }
-                <div className={"content"}>
+                <div className={styles.content}>
                     {categories.length
                         ?
                         categories.map(category =>
-                            <div className={"category"} key={category.id}>
-                                <Link className={"link"} to={'/advertisements/' + category.name}>{category.name}</Link>
+                            <div className={styles.category} key={category.id}>
+                                <Link className={styles.link} to={'/advertisements/' + category.name}>{category.name}</Link>
                                 {isAdmin() && <img src="img/settings.png" onClick={() => view(category.id)} alt={""}></img>}
                             </div>
                         )

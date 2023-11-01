@@ -57,6 +57,10 @@ public class ProductsService {
         return product;
     }
 
+    public List<Product> findBySellerEmail(String email) {
+        return productsRepository.findBySellerEmail(email);
+    }
+
     @Transactional
     public void save(Product product, MultipartFile image, String sellerEmail) {
         if(image != null) {

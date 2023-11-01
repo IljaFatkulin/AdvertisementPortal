@@ -26,7 +26,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Account createAccount(Account account) {
-        if(accountRepository.findByEmail(account.getEmail()) != null) {
+        if(accountRepository.findByEmail(account.getEmail()).isPresent()) {
             throw new EmailAlreadyTaken();
         }
 
@@ -64,5 +64,29 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public List<Account> getAll() {
         return accountRepository.findAll();
+    }
+
+    @Override
+    public void changePassword(String email, String oldPassword, String newPassword) {
+        Account account = accountRepository.findByEmail(email).orElseThrow(AccountNotFoundException::new);
+
+        if(!encoder.matches(oldPassword, account.getPassword())) {
+            throw new BadCredentialsException("Invalid password");
+        }
+
+        account.setPassword(encoder.encode(newPassword));
+        accountRepository.save(account);
+    }
+
+    @Override
+    public void changeEmail(String email, String newEmail, String password) {
+        Account account = accountRepository.findByEmail(email).orElseThrow(AccountNotFoundException::new);
+
+        if(!encoder.matches(password, account.getPassword())) {
+            throw new BadCredentialsException("Invalid password");
+        }
+
+        account.setEmail(newEmail);
+        accountRepository.save(account);
     }
 }

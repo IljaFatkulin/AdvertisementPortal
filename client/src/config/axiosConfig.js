@@ -4,9 +4,19 @@ const myAxios = axios.create({
     baseURL: process.env.REACT_APP_API_BASE_URL
 });
 
+// const addAuthHeader = (userDetails) => {
+//     // myAxios.defaults.headers.common['Authorization'] = 'Basic ' + btoa(userDetails.email + ':' + userDetails.password);
+//     myAxios.defaults.headers.common['Authorization'] = `Bearer ${userDetails.token}`;
+// };
+
 const addAuthHeader = (userDetails) => {
-    // myAxios.defaults.headers.common['Authorization'] = 'Basic ' + btoa(userDetails.email + ':' + userDetails.password);
-    myAxios.defaults.headers.common['Authorization'] = `Bearer ${userDetails.token}`;
+    return axios.create({
+        baseURL: process.env.REACT_APP_API_BASE_URL,
+        headers: {
+            'Authorization': `Bearer ${userDetails.token}`
+        }
+    });
 };
+
 
 export { myAxios, addAuthHeader };

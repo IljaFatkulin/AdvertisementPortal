@@ -28,8 +28,8 @@ export default class AdvertisementService {
     }
 
     static deleteById(id, userDetails) {
-        addAuthHeader(userDetails);
-        return myAxios.post('/products/delete', {
+        const authAxios = addAuthHeader(userDetails);
+        return authAxios.post('/products/delete', {
             id: id
         }).then(response => {
             return response.data;
@@ -43,8 +43,8 @@ export default class AdvertisementService {
         formData.append('attributes', JSON.stringify(attributes));
         formData.append('categoryName', category);
 
-        addAuthHeader(userDetails);
-        return myAxios.post('/products/create', formData, {
+        const authAxios = addAuthHeader(userDetails);
+        return authAxios.post('/products/create', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
@@ -68,8 +68,8 @@ export default class AdvertisementService {
         formData.append('attributes', JSON.stringify(attributes));
         formData.append('id', id);
 
-        addAuthHeader(userDetails);
-        return myAxios.post('/products/edit', formData, {
+        const authAxios = addAuthHeader(userDetails);
+        return authAxios.post('/products/edit', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 }
@@ -83,6 +83,13 @@ export default class AdvertisementService {
                 } else {
                     return error.message;
                 }
+            });
+    }
+
+    static getUserAdvertisements(email) {
+        return myAxios.get('/products/user/'+email)
+            .then(response => {
+                return response.data
             });
     }
 }

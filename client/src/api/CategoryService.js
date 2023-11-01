@@ -19,8 +19,8 @@ export default class CategoryService {
     }
 
     static create(name, userDetails) {
-        addAuthHeader(userDetails);
-        return myAxios.post('/categories/create', {
+        const authAxios = addAuthHeader(userDetails);
+        return authAxios.post('/categories/create', {
             name: name
         })
             .then(response => {
@@ -29,8 +29,8 @@ export default class CategoryService {
     }
 
     static removeAttribute(categoryId, attributeId, userDetails) {
-        addAuthHeader(userDetails);
-        return myAxios.post('/categories/attribute/remove', {
+        const authAxios = addAuthHeader(userDetails);
+        return authAxios.post('/categories/attribute/remove', {
             categoryId: categoryId,
             attributeId: attributeId
         })
@@ -40,8 +40,8 @@ export default class CategoryService {
     }
 
     static addAttribute(categoryId, attributeName, userDetails) {
-        addAuthHeader(userDetails);
-        return myAxios.post('/categories/attribute/add', {
+        const authAxios = addAuthHeader(userDetails);
+        return authAxios.post('/categories/attribute/add', {
             categoryId: categoryId,
             attributeName: attributeName
         })

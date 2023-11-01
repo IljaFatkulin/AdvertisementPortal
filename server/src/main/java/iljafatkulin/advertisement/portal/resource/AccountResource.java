@@ -11,6 +11,9 @@ import iljafatkulin.advertisement.portal.util.ResourceUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -74,5 +77,41 @@ public class AccountResource {
         } catch (AccountNotFoundException e) {
             return new ResponseEntity<>("Account not found", HttpStatus.NOT_FOUND);
         }
+    }
+
+    @PostMapping("/change/password")
+    public ResponseEntity<?> changePassword(@RequestBody Map<String, String> requestBody) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        String oldPassword = requestBody.get("old_password");
+        String newPassword = requestBody.get("new_password");
+
+        try {
+            accountService.changePassword(email, oldPassword, newPassword);
+        } catch (AccountNotFoundException e) {
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        } catch (BadCredentialsException e) {
+            return new ResponseEntity<>("Invalid password", HttpStatus.UNAUTHORIZED);
+        }
+
+        return ResponseEntity.ok(HttpStatus.OK);
+    }
+
+    @PostMapping("/change/email")
+    public ResponseEntity<?> changeEmail(@RequestBody Map<String, String> requestBody) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String oldEmail = authentication.getName();
+        String password = requestBody.get("password");
+        String newEmail = requestBody.get("email");
+
+        try {
+            accountService.changeEmail(oldEmail, newEmail, password);
+        } catch (AccountNotFoundException e) {
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        } catch (BadCredentialsException e) {
+            return new ResponseEntity<>("Invalid password", HttpStatus.UNAUTHORIZED);
+        }
+
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 }

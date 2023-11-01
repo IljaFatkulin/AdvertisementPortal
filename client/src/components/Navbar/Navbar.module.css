@@ -52,6 +52,7 @@
 }
 
 .navbarRight button {
+    margin-right: 10px;
     width: 100px;
     height: 40px;
     border-radius: 5px;

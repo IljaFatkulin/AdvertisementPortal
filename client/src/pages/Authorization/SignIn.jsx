@@ -25,7 +25,6 @@ const SignIn = () => {
             AccountService.authenticate(form)
                 .then(response => {
                     if(response.status === 200) {
-                        // setUserDetails({email: form.email, password: form.password});
                         setUserDetails({
                             id: response.data.account.id,
                             email: form.email,
@@ -36,10 +35,11 @@ const SignIn = () => {
                         setCookies('token', response.data.token, { path: '/' });
 
                         setIsAuth(true);
+
                         navigate('/');
                     }
                 }).catch(error => {
-                    if(error.response.status === 401) {
+                    if(error.response && error.response.status === 401) {
                         setErrors([...errors, error.response.data]);
                     }
             })

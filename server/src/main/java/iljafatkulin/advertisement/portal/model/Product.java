@@ -47,7 +47,7 @@ public class Product {
     @Column(name = "avatar_path")
     private String avatarPath;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     private Category category;
 

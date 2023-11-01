@@ -15,4 +15,6 @@ public interface ProductsRepository extends JpaRepository<Product, Integer> {
     Page<Product> findByCategoryIdOrderById(int categoryId, PageRequest pageRequest);
 
     long countByCategoryName(String categoryName);
+
+    List<Product> findBySellerEmail(String email);
 }

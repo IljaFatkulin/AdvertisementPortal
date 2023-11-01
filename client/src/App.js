@@ -18,7 +18,7 @@ function App() {
     const [isAuth, setIsAuth] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
-    const [cookies, setCookies] = useCookies(['token']);
+    const [cookies] = useCookies(['token']);
 
     useEffect(() => {
         if(cookies.token) {
@@ -39,6 +39,8 @@ function App() {
                 }).finally(() => {
                     setIsLoading(false);
             });
+        } else {
+            setIsLoading(false);
         }
     }, []);
 

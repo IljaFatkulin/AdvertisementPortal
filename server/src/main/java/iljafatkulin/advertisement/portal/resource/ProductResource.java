@@ -74,6 +74,21 @@ public class ProductResource {
         return productDTOList;
     }
 
+    @GetMapping("/user/{email}")
+    public List<ProductDTO> getUserProducts(@PathVariable("email") String email) throws IOException {
+        List<Product> products = productsService.findBySellerEmail(email);
+        List<ProductDTO> productDTOList = ObjectConverter.convertList(products, ProductDTO.class);
+
+        for(int i = 0; i < products.size(); i++) {
+            String path = products.get(i).getAvatarPath();
+            if(path != null) {
+                productDTOList.get(i).setAvatar(getImage(path));
+            }
+        }
+
+        return productDTOList;
+    }
+
     @GetMapping("/count")
     public long productsCount(@RequestParam(name = "category", required = true) String name) {
         return productsService.getProductsCountByCategory(name);

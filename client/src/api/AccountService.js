@@ -1,4 +1,4 @@
-import { myAxios } from "../config/axiosConfig";
+import {addAuthHeader, myAxios} from "../config/axiosConfig";
 
 export default class AccountService {
     static register(user) {
@@ -7,28 +7,35 @@ export default class AccountService {
             password: user.password
         }).then(response => {
             return response.data;
-        }).catch(error => {
-            throw error;
-        })
+        });
     }
 
     static authenticate(user) {
         return myAxios.post('/accounts/authenticate', {
             email: user.email,
             password: user.password
-        }).then(response => {
-            return response
-        })
+        });
     }
 
     static verifyWithToken(token) {
         return myAxios.post('/accounts/verify', {
             token: token
-        }).then(response => {
-            console.log(response.data)
-            return response;
-        }).catch(error => {
-            throw error;
-        })
+        });
+    }
+
+    static changePassword(oldPassword, newPassword, userDetails) {
+        const authAxios = addAuthHeader(userDetails);
+        return authAxios.post('/accounts/change/password', {
+            old_password: oldPassword,
+            new_password: newPassword
+        });
+    }
+
+    static changeEmail(password, email, userDetails) {
+        const authAxios = addAuthHeader(userDetails);
+        return authAxios.post('/accounts/change/email', {
+            password: password,
+            email: email
+        });
     }
 }

@@ -12,4 +12,8 @@ public interface AccountService {
     Account findByEmail(String email);
 
     List<Account> getAll();
+
+    void changePassword(String email, String oldPassword, String newPassword);
+
+    void changeEmail(String email, String newEmail, String password);
 }

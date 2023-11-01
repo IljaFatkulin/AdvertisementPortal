@@ -1,0 +1,16 @@
+.changeModal {
+    position: fixed; /* Использование fixed, чтобы модальное окно было относительно viewport */
+    top: 50%; /* Позиционирование от верхней части viewport */
+    left: 50%; /* Позиционирование от левого края viewport */
+    transform: translate(-50%, -50%); /* Смещение модального окна, чтобы центр был точно в центре viewport */
+
+
+    display: flex;
+    flex-direction: column;
+    padding: 50px;
+    background-color: #ffffff;
+    width: 500px;
+    height: 300px;
+    border: 3px solid #143399;
+    border-radius: 25px;
+}
