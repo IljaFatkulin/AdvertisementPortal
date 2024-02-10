@@ -7,6 +7,8 @@ import iljafatkulin.advertisement.portal.model.Account;
 import iljafatkulin.advertisement.portal.request.LoginRequest;
 import iljafatkulin.advertisement.portal.security.JWTUtil;
 import iljafatkulin.advertisement.portal.service.AccountService;
+import iljafatkulin.advertisement.portal.service.EmailService;
+import iljafatkulin.advertisement.portal.service.impl.AccountServiceImpl;
 import iljafatkulin.advertisement.portal.util.ResourceUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,6 +26,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AccountResource {
     private final AccountService accountService;
+    private final EmailService emailService;
+
     private final JWTUtil jwtUtil;
 
     @PostMapping("/create")
@@ -36,6 +40,7 @@ public class AccountResource {
             response.put("account", account);
             response.put("token", token);
 
+            emailService.sendWelcomeMessage(account.getEmail());
             return ResponseEntity.created(ResourceUtil.getLocation(newAccount.getId())).body(response);
         } catch (EmailAlreadyTaken e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -84,14 +89,31 @@ public class AccountResource {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
         String oldPassword = requestBody.get("old_password");
-        String newPassword = requestBody.get("new_password");
 
         try {
-            accountService.changePassword(email, oldPassword, newPassword);
+            accountService.changePasswordAndSendVerificationEmail(email, oldPassword);
         } catch (AccountNotFoundException e) {
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
         } catch (BadCredentialsException e) {
             return new ResponseEntity<>("Invalid password", HttpStatus.UNAUTHORIZED);
+        }
+
+        return ResponseEntity.ok(HttpStatus.OK);
+    }
+
+    @PostMapping("/change/password/submit")
+    public ResponseEntity<?> changePasswordSubmit(@RequestBody Map<String, String> requestBody) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        String newPassword = requestBody.get("new_password");
+        String code = requestBody.get("code");
+
+        try {
+            accountService.saveNewPasswordAndVerifyCode(email, newPassword, code);
+        } catch (AccountNotFoundException e) {
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        } catch (BadCredentialsException e) {
+            return new ResponseEntity<>("Invalid code", HttpStatus.UNAUTHORIZED);
         }
 
         return ResponseEntity.ok(HttpStatus.OK);

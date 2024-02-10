@@ -58,6 +58,7 @@ public class WebSecurityConfiguration {
                                 .requestMatchers(HttpMethod.POST, "/api/accounts/verify").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/sections/**").permitAll()
                                 .requestMatchers("/**").authenticated()
                                 .anyRequest().hasAnyRole("USER", "ADMIN")
 

@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {Link, useParams} from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import Loader from "../../../components/Loader/Loader";
 import CategoryService from "../../../api/CategoryService";
 import NotFound from "../../NotFound/NotFound";
@@ -11,10 +11,10 @@ const CategoryView = () => {
     const {userDetails} = useContext(UserDetailsContext);
 
     const {id} = useParams();
-    const [error, setError] = useState();
+    const [notFoundError, setNotFoundError] = useState();
 
     const [isLoading, setIsLoading] = useState(true);
-    const [category, setCategory] = useState();
+    const [category, setCategory] = useState({});
     const [attributeName, setAttributeName] = useState("");
 
     function fetchCategoryInfo() {
@@ -23,13 +23,12 @@ const CategoryView = () => {
         CategoryService.getCategoryInfo(id)
             .then(response => {
                 setCategory(response);
-
-                setIsLoading(false);
             })
             .catch(e => {
+                setNotFoundError(e.response.data);
+            }).finally(() => {
                 setIsLoading(false);
-                setError(e.response.data);
-            })
+        })
     }
 
     useEffect(() => {
@@ -52,14 +51,39 @@ const CategoryView = () => {
             });
     }
 
+    const navigate = useNavigate();
+
+    const handleDeleteCategory = () => {
+        CategoryService.deleteCategory(id, userDetails)
+            .then(() => {
+                navigate('/categories');
+            })
+    }
+
+    const [error, setError] = useState('');
+
+    const handleRename = () => {
+        CategoryService.renameCategory(id, category.name, userDetails)
+            .then(response => {
+                console.log(response.data);
+                if(response.status === 200) {
+                    navigate('/categories');
+                }
+            }).catch(error => {
+                if(error.response.status === 400) {
+                    setError('This category name already exists');
+                }
+        })
+    }
+
     return (
         isLoading
             ?
             <Loader/>
             :
-            error
+            notFoundError
             ?
-                <NotFound error={error}/>
+                <NotFound error={notFoundError}/>
             :
                 <div className={"container"}>
                     <div className={"header"}>
@@ -71,7 +95,16 @@ const CategoryView = () => {
                         </div>
                     </div>
                     <div className={styles.content}>
-                        <p>Name: {category.name}</p>
+                        {category.name !== 'Without category' && <button onClick={handleDeleteCategory}>Delete</button>}
+                        {error && <p style={{color: "red"}}>{error}</p>}
+                        <p>Name:
+                            <input
+                                type="text"
+                                value={category.name}
+                                onChange={e => setCategory({...category, name: e.target.value})}
+                            />
+                            {category.name !== 'Without category' && <button onClick={handleRename}>Rename</button>}
+                        </p>
                         <p>Attributes:</p>
                         {category.attributes.length
                         ?

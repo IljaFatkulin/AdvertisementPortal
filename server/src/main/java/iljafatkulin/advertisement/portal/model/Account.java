@@ -49,6 +49,10 @@ public class Account {
 
     private Set<Role> roles;
 
+    @Column(name = "verification_code")
+    @JsonIgnore
+    private String verificationCode;
+
     public Account(long id, String email, String password, boolean enabled, boolean credentialsExpired, boolean expired, boolean locked, Set<Role> roles) {
         this.id = id;
         this.email = email;

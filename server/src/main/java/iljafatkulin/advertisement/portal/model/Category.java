@@ -28,6 +28,11 @@ public class Category {
     @Size(max = 100)
     private String name;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "section_id", referencedColumnName = "id")
+    @JsonIgnore
+    private Section section;
+
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Product> products;

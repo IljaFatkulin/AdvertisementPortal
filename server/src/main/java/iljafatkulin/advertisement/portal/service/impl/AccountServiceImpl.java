@@ -7,6 +7,7 @@ import iljafatkulin.advertisement.portal.model.Role;
 import iljafatkulin.advertisement.portal.repositories.AccountRepository;
 import iljafatkulin.advertisement.portal.repositories.RoleRepository;
 import iljafatkulin.advertisement.portal.service.AccountService;
+import iljafatkulin.advertisement.portal.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 @RequiredArgsConstructor
@@ -23,6 +25,7 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder encoder;
+    private final EmailService emailService;
 
     @Override
     public Account createAccount(Account account) {
@@ -87,6 +90,35 @@ public class AccountServiceImpl implements AccountService {
         }
 
         account.setEmail(newEmail);
+        accountRepository.save(account);
+    }
+
+    @Override
+    public void changePasswordAndSendVerificationEmail(String email, String oldPassword) {
+        Account account = accountRepository.findByEmail(email).orElseThrow(AccountNotFoundException::new);
+
+        if(!encoder.matches(oldPassword, account.getPassword())) {
+            throw new BadCredentialsException("Invalid password");
+        }
+
+        Random random = new Random();
+        String code = String.valueOf(random.nextInt((999999 - 100000) + 1) + 100000);
+
+        emailService.sendCodeToChangePassword(email, code);
+
+        account.setVerificationCode(code);
+        accountRepository.save(account);
+    }
+
+    @Override
+    public void saveNewPasswordAndVerifyCode(String email, String newPassword, String code) {
+        Account account = accountRepository.findByEmail(email).orElseThrow(AccountNotFoundException::new);
+
+        if(!code.equals(account.getVerificationCode())) {
+            throw new BadCredentialsException("Invalid code");
+        }
+
+        account.setPassword(encoder.encode(newPassword));
         accountRepository.save(account);
     }
 }

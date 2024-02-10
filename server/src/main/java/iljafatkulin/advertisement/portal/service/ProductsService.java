@@ -3,10 +3,13 @@ package iljafatkulin.advertisement.portal.service;
 import iljafatkulin.advertisement.portal.exception.AccountNotFoundException;
 import iljafatkulin.advertisement.portal.exception.ProductNotFoundException;
 import iljafatkulin.advertisement.portal.model.Account;
+import iljafatkulin.advertisement.portal.model.Category;
 import iljafatkulin.advertisement.portal.model.Product;
+import iljafatkulin.advertisement.portal.model.ProductImage;
 import iljafatkulin.advertisement.portal.repositories.AccountRepository;
 import iljafatkulin.advertisement.portal.repositories.ProductAttributeValuesRepository;
 import iljafatkulin.advertisement.portal.repositories.ProductsRepository;
+import iljafatkulin.advertisement.portal.util.ImageUtil;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Hibernate;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +24,7 @@ import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -29,8 +33,6 @@ public class ProductsService {
     private final ProductsRepository productsRepository;
     private final ProductAttributeValuesRepository productAttributeValuesRepository;
     private final AccountRepository accountRepository;
-
-    private final String imageFolderPath = "/Users/iljafatkulin/IdeaProjects/Advertisement-Portal/images";
 
     public List<Product> findAll() {
         return productsRepository.findAll();
@@ -53,6 +55,7 @@ public class ProductsService {
 
         Hibernate.initialize(product.getAttributes());
         Hibernate.initialize(product.getSeller());
+        Hibernate.initialize(product.getImages());
 
         return product;
     }
@@ -61,10 +64,20 @@ public class ProductsService {
         return productsRepository.findBySellerEmail(email);
     }
 
+    public List<Product> findByAttributesAndValuesAndCategory(List<String> attributes, List<String> values, Category category) {
+        List<String> attributeNamesLowercase = attributes.stream()
+                .map(String::toLowerCase)
+                .collect(Collectors.toList());
+
+        long sizeOfAttributeNames = attributeNamesLowercase.size();
+
+        return productAttributeValuesRepository.findProductsByAttributesAndValues(attributeNamesLowercase, values, sizeOfAttributeNames, category);
+    }
+
     @Transactional
     public void save(Product product, MultipartFile image, String sellerEmail) {
         if(image != null) {
-            product.setAvatarPath(saveImage(image));
+            product.setAvatarPath(saveAvatar(image));
         }
 
         Account account = accountRepository.findByEmail(sellerEmail).orElseThrow(AccountNotFoundException::new);
@@ -80,7 +93,14 @@ public class ProductsService {
     public void delete(int id) {
         Product product = productsRepository.findById(id).orElse(null);
         if(product != null) {
-            deleteImage(product.getAvatarPath());
+            ImageUtil.deleteImage(product.getAvatarPath());
+
+            List<ProductImage> images = product.getImages();
+            for(ProductImage image : images) {
+                System.out.println(image.getPath());
+                ImageUtil.deleteImage(image.getPath());
+            }
+
             productsRepository.delete(product);
         }
     }
@@ -88,7 +108,14 @@ public class ProductsService {
     @Transactional
     public void delete(Product product) {
         if(product != null) {
-            deleteImage(product.getAvatarPath());
+            ImageUtil.deleteImage(product.getAvatarPath());
+
+            List<ProductImage> images = product.getImages();
+            for(ProductImage image : images) {
+                System.out.println(image.getPath());
+                ImageUtil.deleteImage(image.getPath());
+            }
+
             productsRepository.delete(product);
         }
     }
@@ -113,17 +140,14 @@ public class ProductsService {
     }
 
     @Transactional
-    public void edit(Product product, MultipartFile image) {
-        if(image != null) {
-            deleteImage(product.getAvatarPath());
-            product.setAvatarPath(saveImage(image));
-        }
-        product.setUpdatedAt(new Date());
-        if(product.getCreatedAt() == null) {
-            product.setCreatedAt(new Date());
+    public void edit(Product product, MultipartFile avatar) {
+        if(avatar != null) {
+            System.out.println("NOT NULL");
+            ImageUtil.deleteImage(product.getAvatarPath());
+            product.setAvatarPath(saveAvatar(avatar));
         }
 
-        productsRepository.save(product);
+        edit(product);
     }
 
     @Transactional
@@ -133,32 +157,23 @@ public class ProductsService {
         productsRepository.save(product);
     }
 
-    private void deleteImage(String path) {
-        try {
-            Files.deleteIfExists(Paths.get(imageFolderPath + path));
-        } catch (IOException e) {
-            System.out.println("File delete error: " + e.getMessage());
-        }
+    @Transactional
+    public void addImage(Product product, MultipartFile image) {
+        ProductImage productImage = new ProductImage();
+        productImage.setPath(saveProductImage(image));
+        product.addImage(productImage);
     }
 
-    private String saveImage(MultipartFile image) {
-        try {
-            String originalFilename = image.getOriginalFilename();
-            String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
 
-            // Generating unique file name
-            String uniqueFileName = System.currentTimeMillis() + UUID.randomUUID().toString();
+    private String saveAvatar(MultipartFile image) {
+        return ImageUtil.saveImage(image, "/ads/avatars/");
+    }
 
-            String fileName = uniqueFileName + fileExtension;
+    private String saveProductImage(MultipartFile image) {
+        return ImageUtil.saveImage(image, "/ads/images/");
+    }
 
-            File destFile = new File(imageFolderPath + "/ads/avatars/" + fileName);
-            image.transferTo(destFile);
-
-            return "/ads/avatars/" + fileName;
-        } catch (IOException e) {
-            System.out.println("Image was not uploaded");
-        }
-
-        return null;
+    public List<Product> searchByNameAndPriceAndCategory(String name, Double minPrice, Double maxPrice, Category category) {
+        return productsRepository.findByStartingNameAndPriceRangeIgnoreCase(name.toLowerCase(), minPrice, maxPrice, category);
     }
 }

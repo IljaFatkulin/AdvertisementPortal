@@ -15,7 +15,7 @@ const Navbar = () => {
                 <Link to={'/'} className={styles.link}>Home</Link>
                 <Link className={styles.link}>About us</Link>
                 <Link to={'/categories'} className={styles.link}>Categories</Link>
-                <Link className={styles.link}>Create advertisement</Link>
+                <Link to={'/categories/choose'} className={styles.link}>Create advertisement</Link>
             </div>
             <div className={styles.navbarRight}>
                 {isAuth

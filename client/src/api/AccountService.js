@@ -5,8 +5,6 @@ export default class AccountService {
         return myAxios.post('/accounts/create', {
             email: user.email,
             password: user.password
-        }).then(response => {
-            return response.data;
         });
     }
 
@@ -23,11 +21,18 @@ export default class AccountService {
         });
     }
 
-    static changePassword(oldPassword, newPassword, userDetails) {
+    static changePassword(oldPassword, userDetails) {
         const authAxios = addAuthHeader(userDetails);
         return authAxios.post('/accounts/change/password', {
             old_password: oldPassword,
-            new_password: newPassword
+        });
+    }
+
+    static changePasswordSubmit(newPassword, code, userDetails) {
+        const authAxios = addAuthHeader(userDetails);
+        return authAxios.post('/accounts/change/password/submit', {
+            new_password: newPassword,
+            code: code
         });
     }
 

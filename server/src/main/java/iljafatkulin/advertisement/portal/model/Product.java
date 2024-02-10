@@ -59,6 +59,10 @@ public class Product {
     @JoinColumn(name = "seller_id")
     private Account seller;
 
+    @OneToMany(mappedBy = "product")
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    private List<ProductImage> images;
+
     public Product(String name, double price, String description) {
         this.name = name;
         this.price = price;
@@ -76,5 +80,20 @@ public class Product {
         }
 
         this.attributes.add(productAttributeValue);
+    }
+
+    public void addImage(ProductImage image) {
+        if(images == null) {
+            images = new ArrayList<>();
+        }
+
+        image.setProduct(this);
+        images.add(image);
+    }
+
+    public void removeImage(ProductImage image) {
+        if(images != null) {
+            images.remove(image);
+        }
     }
 }

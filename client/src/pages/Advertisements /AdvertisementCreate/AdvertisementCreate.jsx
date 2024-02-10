@@ -1,22 +1,43 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {Link, useNavigate, useParams} from "react-router-dom";
 import AdvertisementService from "../../../api/AdvertisementService";
 import Navbar from "../../../components/Navbar/Navbar";
 import styles from './AdvertisementCreate.module.css';
 import {UserDetailsContext} from "../../../context/UserDetails";
+import Loader from "../../../components/Loader/Loader";
+import CategoryService from "../../../api/CategoryService";
 
 const AdvertisementCreate = () => {
     const {userDetails} = useContext(UserDetailsContext);
+
+    const [isLoading, setIsLoading] = useState(true);
 
     const {category} = useParams();
     const [product, setProduct] = useState({
         name: "",
         price: 0.00,
         description: "",
-        image: null
+        avatar: null
     });
 
+    const [images, setImages] = useState([]);
+
     const [attributes, setAttributes] = useState([]);
+
+    useEffect(() => {
+        CategoryService.getCategoryAttributes(category)
+            .then(response => {
+                setAttributes(response.map(attribute => ({
+                    id: attribute.id,
+                    attribute: {
+                        name: attribute.name,
+                    },
+                    value: ''
+                })));
+                setIsLoading(false);
+            })
+    }, []);
+
     const navigate = useNavigate();
 
     const [errors, setErrors] = useState([]);
@@ -25,11 +46,11 @@ const AdvertisementCreate = () => {
         e.preventDefault();
         setErrors([]);
 
-        if(!product.image) {
+        if(!product.avatar) {
             setErrors([...errors, "Image is required"]);
             return;
         }
-        AdvertisementService.create(product, attributes, category, userDetails)
+        AdvertisementService.create(product, attributes, category, images, userDetails)
             .then(response => {
                 if(response.status === 201) {
                     navigate('/advertisements/' + category);
@@ -61,7 +82,9 @@ const AdvertisementCreate = () => {
     function addAttribute(e) {
         e.preventDefault();
 
-        setAttributes([...attributes, {id: attributes.length, value: "", attribute: {name: ""}}]);
+        const newAttributeId = attributes.length > 0 ? Math.max(...attributes.map(attr => attr.id)) + 1 : 0;
+
+        setAttributes([...attributes, {id: newAttributeId, value: "", attribute: {name: ""}}]);
     }
 
     function removeAttribute(index) {
@@ -72,12 +95,32 @@ const AdvertisementCreate = () => {
         });
     }
 
-    const handleImageChange = (event) => {
-        const selectedImage = event.target.files[0];
-        setProduct({ ...product, image: selectedImage });
+    const handleAvatarChange = (event) => {
+        const selectedAvatar = event.target.files[0];
+        setProduct({ ...product, avatar: selectedAvatar });
     };
 
+    const handleAddImage = (e) => {
+        e.preventDefault();
+        setImages([...images, {id: images.length, image: null}]);
+    }
+
+    const handleImageChange = (e, id) => {
+        e.preventDefault();
+        const updatedImages = images.map(image => {
+            if(image.id === id) {
+                image.image = e.target.files[0];
+            }
+            return image;
+        });
+        setImages(updatedImages);
+    }
+
     return (
+        isLoading
+        ?
+        <Loader/>
+        :
         <div className={"container"}>
             <div className={"header"}>
                 <Navbar/>
@@ -116,12 +159,12 @@ const AdvertisementCreate = () => {
                         onChange={e => setProduct({...product, description: e.target.value})}
                     />
 
-                    <p>Image:</p>
+                    <p>Avatar:</p>
                     <input
                         type="file"
-                        name="image"
+                        name="avatar"
                         accept="image/jpeg, image/png, image/jpg"
-                        onChange={handleImageChange}
+                        onChange={handleAvatarChange}
                     />
 
                     <div>
@@ -152,10 +195,26 @@ const AdvertisementCreate = () => {
                         :
                             <p></p>
                         }
+                        <button onClick={addAttribute}>Add attribute</button>
+                    </div>
+
+                    <div>
+                        <p>Images:</p>
+                        {images.length > 0 &&
+                            images.map(image =>
+                                <input
+                                    key={image.id}
+                                    type="file"
+                                    name={"image" + image.id}
+                                    accept="image/jpeg, image/png, image/jpg"
+                                    onChange={(e) => handleImageChange(e, image.id)}
+                                />
+                            )
+                        }
+                        <button onClick={handleAddImage}>Add image</button>
                     </div>
 
                     <div className={styles.buttons}>
-                        <button onClick={addAttribute}>Add attribute</button>
                         <button onClick={handleSubmit}>Create</button>
                     </div>
 

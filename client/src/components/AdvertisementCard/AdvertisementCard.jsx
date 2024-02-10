@@ -3,11 +3,15 @@ import styles from './AdvertisementCard.module.css';
 import ImageConverter from "../ImageConverter/ImageConverter";
 import {useNavigate} from "react-router-dom";
 
-const AdvertisementCard = ({advertisement, category}) => {
+const AdvertisementCard = ({advertisement, category, sellerEmail}) => {
     const navigate = useNavigate();
 
     const view = (id) => {
-        navigate('/advertisements/' + category + '/' + id);
+        if(sellerEmail) {
+            navigate('/advertisements/' + category + '/' + id + '?seller=' + sellerEmail);
+        } else {
+            navigate('/advertisements/' + category + '/' + id);
+        }
     }
 
     return (

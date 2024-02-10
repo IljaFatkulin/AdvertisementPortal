@@ -21,27 +21,14 @@
     }
 }
 
-.pagination {
-    margin: 50px 0;
+.menu {
+    margin: 20px 100px 0 100px;
+    padding: 0 20px 20px 20px;
+    border: 2px solid #c8c8c8;
     display: flex;
-    justify-content: center;
-
 }
 
-.pagination button {
-    width: 40px;
-    height: 40px;
-    border: 0;
-    background-color: #2657F2;
-    border-radius: 5px;
-    color: white;
-    font-weight: 800;
-    font-size: 16px;
-    margin-right: 10px;
-    transition: 0.5s;
-}
-
-.pagination button:hover, .pagination button:focus {
-    cursor: pointer;
-    background-color: #371E7B;
+.filterButton {
+    margin: 20px 0 0 auto;
+    width: 100px;
 }

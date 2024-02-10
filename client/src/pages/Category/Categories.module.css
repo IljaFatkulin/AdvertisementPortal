@@ -1,27 +1,42 @@
 .content {
     margin-top: 25px;
-    height: 100vh;
+    /*height: 100vh;*/
     display: grid;
-    /*place-content: center;*/
-    /*align-items: center;*/
     justify-content: center;
     grid-template-columns: repeat(4, minmax(100px, 300px));
-    grid-auto-rows: 65px;
+    /*grid-auto-rows: 65px;*/
+    grid-auto-rows: auto;
+    gap: 10px;
+    align-items: start;
+    /*display: flex;*/
+    /*flex-direction: column;*/
+    /*align-items: stretch;*/
 }
 
+ul, li {
+    padding: 0;
+    margin: 0;
+}
+ul {
+    padding-left: 15px;
+    /*list-style: none;*/
+}
+
+.section {
+}
 
 .category {
-    text-align: center;
+    /*text-align: center;*/
 }
 
-.category img {
+.settings {
     cursor: pointer;
     margin-left: 10px;
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
 }
 
-.category img:hover {
+.settings:hover {
     width: 25px;
     height: 25px;
     transition: 1s;
@@ -31,13 +46,13 @@
 .category .link {
     font-family: "Nunito",sans-serif;
     font-weight: 800;
-    font-size: 24px;
+    font-size: 20px;
     color: #271273;
     text-decoration: none;
 }
 
 .category .link:hover {
-    font-size: 28px;
+    font-size: 24px;
     color: #e929fc;
     transition: 0.5s;
 }

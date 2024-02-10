@@ -7,8 +7,14 @@ import Navbar from "../../components/Navbar/Navbar";
 import styles from './Advertisements.module.css';
 import useAuth from "../../hooks/useAuth";
 import AdvertisementCard from "../../components/AdvertisementCard/AdvertisementCard";
+import CategoryService from "../../api/CategoryService";
+import Pagination from "../../components/Pagination/Pagination";
+import AdvertisementFilters from "../../components/AdvertisementFilters/AdvertisementFilters";
+import AdvertisementSearch from "../../components/AdvertisementSearch/AdvertisementSearch";
 
 const Advertisements = () => {
+    const [filters, setFilters] = useState([]);
+
     const {isAuth} = useAuth();
 
     const [error, setError] = useState();
@@ -19,47 +25,22 @@ const Advertisements = () => {
     const [pagesCount, setPagesCount] = useState(0);
     const [currentPage, setCurrentPage] = useState(0);
     const [pages, setPages] = useState({start: 0, end: 0});
-
-    const [buttons, setButtons] = useState([]);
-
-    function changePage(page, count) {
-        setCurrentPage(page);
-        let start;
-        let end;
-        if(page-2 >= 0) {
-            start = page-2;
-        } else {
-            start = 0;
-        }
-
-        if(start + 5 < count) {
-            end = start + 5;
-        } else {
-            end = count-1;
-        }
-        setPages({start: start, end: end, current: page});
-    }
-
-    useEffect(() => {
-        let b = [];
-        for(let i = pages.start; i <= pages.end; i++) {
-            if(i === pages.current) {
-                b = ([...b, <button style={{backgroundColor: "#371E7B"}} key={i} onClick={() => changePage(i, pagesCount)}>{i+1}</button>])
-            } else {
-                b = ([...b, <button key={i} onClick={() => changePage(i, pagesCount)}>{i+1}</button>])
-
-            }
-        }
-        setButtons(b);
-    }, [pages])
-
-    useEffect(() => {
+    const fetchPagesCount = () => {
         AdvertisementService.getCount(category)
             .then(response => {
                 let p = Math.ceil(response/12);
                 setPagesCount(p);
-                changePage(0, p);
+                setCurrentPage(0);
             })
+    }
+
+    useEffect(() => {
+        CategoryService.getCategoryAttributes(category)
+            .then(response => {
+                setFilters(response.map(attribute => ({ ...attribute, value: '' })));
+            });
+
+        fetchPagesCount();
     }, []);
 
     useEffect(() => {
@@ -80,6 +61,30 @@ const Advertisements = () => {
             })
     }
 
+    function handleFiltersChange(updatedFilters) {
+        const nonEmptyFilters = updatedFilters.filter(attribute => attribute.value);
+        if (nonEmptyFilters.length < 1) {
+            fetchPagesCount();
+            fetchAdvertisements();
+        } else {
+            setPages(1);
+            AdvertisementService.getPageWithFilter(category, currentPage, nonEmptyFilters)
+                .then(response => {
+                    setAdvertisements(response);
+                })
+                .catch(e => {
+                    setError(e.response.data);
+                });
+        }
+    }
+
+    const handleFilterClear = () => {
+        fetchPagesCount();
+        fetchAdvertisements();
+    }
+
+    const [isFiltersVisible, setIsFiltersVisible] = useState(false);
+
     return (
         isLoading
         ?
@@ -98,6 +103,25 @@ const Advertisements = () => {
                             <p>{category}</p>
                         </div>
                     </div>
+
+                    <div className={styles.menu}>
+                        <AdvertisementSearch
+                            setAdvertisements={setAdvertisements}
+                            category={category}
+                            setPages={setPages}
+                            onFilterClear={handleFilterClear}
+                        />
+
+                        <button onClick={() => setIsFiltersVisible(!isFiltersVisible)} className={styles.filterButton}>Filters</button>
+                        <AdvertisementFilters
+                            setIsFiltersVisible={setIsFiltersVisible}
+                            isFiltersVisible={isFiltersVisible}
+                            filters={filters}
+                            setFilters={setFilters}
+                            onFiltersChange={handleFiltersChange}
+                        />
+                    </div>
+
                     {isAuth &&
                         <Link to={'/advertisements/' + category + '/create'} className={"create"}>
                             <button className={"button-create"}>Create</button>
@@ -118,9 +142,13 @@ const Advertisements = () => {
                             <p>Advertisements not found</p>
                         }
                     </div>
-                    <div className={styles.pagination}>
-                        {buttons}
-                    </div>
+                    <Pagination
+                        pagesCount={pagesCount}
+                        currentPage={currentPage}
+                        onPageChange={setCurrentPage}
+                        pages={pages}
+                        setPages={setPages}
+                    />
                 </div>
     );
 };
