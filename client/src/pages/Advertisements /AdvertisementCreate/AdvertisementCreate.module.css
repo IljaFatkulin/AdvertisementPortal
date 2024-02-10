@@ -16,6 +16,16 @@
     color: #2154F2;
 }
 
+.imageEdit {
+    object-fit: contain;
+    height: 100%;
+    width: 100%;
+}
+
+.imageEdit:hover {
+    border: 5px solid #371E7B;
+}
+
 .formCreate input {
     width: 100%;
     border: 1px solid #eaeaea;
@@ -57,4 +67,10 @@
 .formCreate .save:hover, .formCreate .save:focus {
     cursor: pointer;
     background-color: #2a8f2f;
+}
+
+.editImages {
+    display: grid;
+    grid-template-columns: repeat(3, 200px);
+    gap: 10px;
 }

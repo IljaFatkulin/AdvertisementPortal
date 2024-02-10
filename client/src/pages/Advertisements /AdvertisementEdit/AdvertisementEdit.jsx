@@ -5,6 +5,7 @@ import Loader from "../../../components/Loader/Loader";
 import Navbar from "../../../components/Navbar/Navbar";
 import styles from '../AdvertisementCreate/AdvertisementCreate.module.css';
 import {UserDetailsContext} from "../../../context/UserDetails";
+import ImageConverter from "../../../components/ImageConverter/ImageConverter";
 
 const AdvertisementEdit = () => {
     const {userDetails} = useContext(UserDetailsContext);
@@ -15,6 +16,10 @@ const AdvertisementEdit = () => {
     const {category, id} = useParams();
     const navigate = useNavigate();
 
+
+    const [images, setImages] = useState([]);
+    const [editedImages, setEditedImages] = useState([]);
+
     useEffect(() => {
         AdvertisementService.getById(id)
             .then(response => {
@@ -24,7 +29,11 @@ const AdvertisementEdit = () => {
                 });
                 setAttributes(attrs);
 
+                delete response.avatar
+                setImages(response.imagesBytes);
+                delete response.imagesBytes;
                 delete response.attributes;
+
                 setProduct(response);
 
                 setIsLoading(false);
@@ -49,7 +58,7 @@ const AdvertisementEdit = () => {
     function handleSubmit(e) {
         e.preventDefault();
 
-        AdvertisementService.edit(product, attributes, id, userDetails)
+        AdvertisementService.edit(product, attributes, id, images, userDetails)
             .then(response => {
                 if(response.data === 'OK') {
                     navigate('/advertisements/' + category + '/' + id);
@@ -71,11 +80,14 @@ const AdvertisementEdit = () => {
         });
     };
 
-    const handleImageChange = (event) => {
+    const handleAvatarChange = (event) => {
         const selectedImage = event.target.files[0];
-        setProduct({ ...product, image: selectedImage });
+        setProduct({ ...product, avatar: selectedImage });
     };
 
+    const handleImageChange = (e, id) => {
+        setImages([...images, {id: id, image: e.target.files[0]}]);
+    }
 
     return (
         isLoading
@@ -116,12 +128,12 @@ const AdvertisementEdit = () => {
                         onChange={e => setProduct({...product, description: e.target.value})}
                     />
 
-                    <p>Image:</p>
+                    <p>Avatar:</p>
                     <input
                         type="file"
-                        name="image"
+                        name="avatar"
                         accept="image/jpeg, image/png, image/jpg"
-                        onChange={handleImageChange}
+                        onChange={handleAvatarChange}
                     />
 
                     <div>
@@ -151,6 +163,26 @@ const AdvertisementEdit = () => {
                             ))
                             :
                             <p></p>
+                        }
+                    </div>
+                    <div className={styles.editImages}>
+                        {images.length > 0 &&
+                            images.map(image =>
+                                <div key={image.id}>
+                                    {/*<ImageConverter data={image.image} className={styles.imageEdit}/>*/}
+                                    <label htmlFor={`imageInput${image.id}`}>
+                                        <ImageConverter data={image.image} className={styles.imageEdit}/>
+                                    </label>
+                                    <input
+                                        id={`imageInput${image.id}`}
+                                        type="file"
+                                        name={`avatar${image.id}`}
+                                        accept="image/jpeg, image/png, image/jpg"
+                                        onChange={(e) => handleImageChange(e, image.id)}
+                                        style={{ display: "none" }}
+                                    />
+                                </div>
+                            )
                         }
                     </div>
 

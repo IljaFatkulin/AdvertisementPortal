@@ -1,11 +1,13 @@
 package iljafatkulin.advertisement.portal.service.impl;
 
+import iljafatkulin.advertisement.portal.exception.AccountNotFoundException;
 import iljafatkulin.advertisement.portal.exception.EmailAlreadyTaken;
 import iljafatkulin.advertisement.portal.model.Account;
 import iljafatkulin.advertisement.portal.model.Role;
 import iljafatkulin.advertisement.portal.repositories.AccountRepository;
 import iljafatkulin.advertisement.portal.repositories.RoleRepository;
 import iljafatkulin.advertisement.portal.service.AccountService;
+import iljafatkulin.advertisement.portal.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 @RequiredArgsConstructor
@@ -22,10 +25,11 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder encoder;
+    private final EmailService emailService;
 
     @Override
     public Account createAccount(Account account) {
-        if(accountRepository.findByEmail(account.getEmail()) != null) {
+        if(accountRepository.findByEmail(account.getEmail()).isPresent()) {
             throw new EmailAlreadyTaken();
         }
 
@@ -38,7 +42,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     public Account authenticateUser(String email, String password) {
-        Account account = accountRepository.findByEmail(email);
+        Account account = accountRepository.findByEmail(email).orElseThrow(AccountNotFoundException::new);
         if(account == null) {
             throw new UsernameNotFoundException("User not found");
         }
@@ -57,11 +61,64 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Account findByEmail(String email) {
-        return accountRepository.findByEmail(email);
+        return accountRepository.findByEmail(email).orElseThrow(AccountNotFoundException::new);
     }
 
     @Override
     public List<Account> getAll() {
         return accountRepository.findAll();
+    }
+
+    @Override
+    public void changePassword(String email, String oldPassword, String newPassword) {
+        Account account = accountRepository.findByEmail(email).orElseThrow(AccountNotFoundException::new);
+
+        if(!encoder.matches(oldPassword, account.getPassword())) {
+            throw new BadCredentialsException("Invalid password");
+        }
+
+        account.setPassword(encoder.encode(newPassword));
+        accountRepository.save(account);
+    }
+
+    @Override
+    public void changeEmail(String email, String newEmail, String password) {
+        Account account = accountRepository.findByEmail(email).orElseThrow(AccountNotFoundException::new);
+
+        if(!encoder.matches(password, account.getPassword())) {
+            throw new BadCredentialsException("Invalid password");
+        }
+
+        account.setEmail(newEmail);
+        accountRepository.save(account);
+    }
+
+    @Override
+    public void changePasswordAndSendVerificationEmail(String email, String oldPassword) {
+        Account account = accountRepository.findByEmail(email).orElseThrow(AccountNotFoundException::new);
+
+        if(!encoder.matches(oldPassword, account.getPassword())) {
+            throw new BadCredentialsException("Invalid password");
+        }
+
+        Random random = new Random();
+        String code = String.valueOf(random.nextInt((999999 - 100000) + 1) + 100000);
+
+        emailService.sendCodeToChangePassword(email, code);
+
+        account.setVerificationCode(code);
+        accountRepository.save(account);
+    }
+
+    @Override
+    public void saveNewPasswordAndVerifyCode(String email, String newPassword, String code) {
+        Account account = accountRepository.findByEmail(email).orElseThrow(AccountNotFoundException::new);
+
+        if(!code.equals(account.getVerificationCode())) {
+            throw new BadCredentialsException("Invalid code");
+        }
+
+        account.setPassword(encoder.encode(newPassword));
+        accountRepository.save(account);
     }
 }

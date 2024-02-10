@@ -47,7 +47,7 @@ public class Product {
     @Column(name = "avatar_path")
     private String avatarPath;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     private Category category;
 
@@ -58,6 +58,10 @@ public class Product {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seller_id")
     private Account seller;
+
+    @OneToMany(mappedBy = "product")
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    private List<ProductImage> images;
 
     public Product(String name, double price, String description) {
         this.name = name;
@@ -76,5 +80,20 @@ public class Product {
         }
 
         this.attributes.add(productAttributeValue);
+    }
+
+    public void addImage(ProductImage image) {
+        if(images == null) {
+            images = new ArrayList<>();
+        }
+
+        image.setProduct(this);
+        images.add(image);
+    }
+
+    public void removeImage(ProductImage image) {
+        if(images != null) {
+            images.remove(image);
+        }
     }
 }

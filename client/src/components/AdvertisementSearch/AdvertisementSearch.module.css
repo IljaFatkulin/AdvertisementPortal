@@ -1,0 +1,37 @@
+.search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #2154F2;
+    font-weight: 700;
+}
+
+.search p {
+    margin: 0;
+    padding: 0;
+}
+
+.search div {
+    margin-right: 20px;
+}
+
+.search input {
+    border: 2px solid #c8c8c8;
+    padding: 10px;
+}
+
+.search button {
+    margin-top: 20px;
+    margin-bottom: 0;
+    height: 40px;
+    padding: 10px 20px;
+    /*margin-right: 10px;*/
+}
+
+.searchName {
+    width: 300px;
+}
+
+.searchPrice {
+    width: 100px;
+}

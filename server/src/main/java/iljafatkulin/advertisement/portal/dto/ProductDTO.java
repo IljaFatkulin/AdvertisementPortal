@@ -27,6 +27,8 @@ public class ProductDTO {
     @Size(max = 10000, message = "Description must be shorter than 10,000 characters")
     private String description;
 
+    private CategoryDTO category;
+
     private byte[] avatar;
 
     public String getPrice() {

@@ -1,15 +1,17 @@
 package iljafatkulin.advertisement.portal.resource;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import iljafatkulin.advertisement.portal.dto.AttributeValueDTO;
 import iljafatkulin.advertisement.portal.dto.ProductDTO;
 import iljafatkulin.advertisement.portal.dto.ProductDetailsDTO;
-import iljafatkulin.advertisement.portal.request.FormCreateProduct;
-import iljafatkulin.advertisement.portal.request.FormEditProduct;
 import iljafatkulin.advertisement.portal.model.Attribute;
 import iljafatkulin.advertisement.portal.model.Category;
 import iljafatkulin.advertisement.portal.model.Product;
+import iljafatkulin.advertisement.portal.model.ProductImage;
+import iljafatkulin.advertisement.portal.request.FormCreateProduct;
+import iljafatkulin.advertisement.portal.request.FormEditProduct;
 import iljafatkulin.advertisement.portal.service.AttributesService;
 import iljafatkulin.advertisement.portal.service.CategoriesService;
 import iljafatkulin.advertisement.portal.service.ProductsService;
@@ -24,7 +26,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StreamUtils;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Validator;
@@ -35,9 +36,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
-
-import com.fasterxml.jackson.core.type.TypeReference;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/products")
@@ -51,18 +52,49 @@ public class ProductResource {
     private final Validator validator;
 
     @GetMapping()
-    public List<ProductDTO> index(@RequestParam(name = "category", required = true) String category,
+    public List<ProductDTO> index(@RequestParam(name = "category", required = true) String categoryName,
                                   @RequestParam(name = "page", required = false) Integer page,
-                                  @RequestParam(name = "limit", required = false) Integer limit) throws IOException {
-        int categoryId = categoriesService.findByName(category).getId();
+                                  @RequestParam(name = "limit", required = false) Integer limit,
+                                  @RequestParam(name = "attributes", required = false) List<String> attributes,
+                                  @RequestParam(name = "values", required = false) List<String> values,
+                                  @RequestParam(name = "name", required = false) String name,
+                                  @RequestParam(name = "minPrice", required = false) Double minPrice,
+                                  @RequestParam(name = "maxPrice", required = false) Double maxPrice
+    ) throws IOException {
+        Category category = categoriesService.findByName(categoryName);
+        int categoryId = category.getId();
 
         List<Product> products;
-        if(page != null && limit != null) {
-            products = productsService.findByCategoryId(categoryId, PageRequest.of(page, limit));
+
+        name = name != null ? name : "";
+        minPrice = minPrice != null ? minPrice : 0;
+        maxPrice = maxPrice != null ? maxPrice : 0;
+        if(!name.isEmpty() || minPrice > 0 || maxPrice > 0) {
+            products = productsService.searchByNameAndPriceAndCategory(name, minPrice, maxPrice, category);
+        } else if(attributes != null && values != null) {
+            products = productsService.findByAttributesAndValuesAndCategory(attributes, values, category);
+        } else if (page != null && limit != null) {
+            PageRequest pageRequest = PageRequest.of(page, limit);
+            products = productsService.findByCategoryId(categoryId, pageRequest);
         } else {
-            products = productsService.findByCategoryId(categoryId);
+            products = new ArrayList<>();
         }
 
+        List<ProductDTO> productDTOList = ObjectConverter.convertList(products, ProductDTO.class);
+
+        for(int i = 0; i < products.size(); i++) {
+            String path = products.get(i).getAvatarPath();
+            if(path != null) {
+                productDTOList.get(i).setAvatar(getImage(path));
+            }
+        }
+
+        return productDTOList;
+    }
+
+    @GetMapping("/user/{email}")
+    public List<ProductDTO> getUserProducts(@PathVariable("email") String email) throws IOException {
+        List<Product> products = productsService.findBySellerEmail(email);
         List<ProductDTO> productDTOList = ObjectConverter.convertList(products, ProductDTO.class);
 
         for(int i = 0; i < products.size(); i++) {
@@ -85,10 +117,18 @@ public class ProductResource {
         Product product = productsService.findById(id);
         String avatarPath = product.getAvatarPath();
 
+
         ProductDetailsDTO productDTO = ObjectConverter.convert(product, ProductDetailsDTO.class);
         if(avatarPath != null) {
             productDTO.setAvatar(getImage(avatarPath));
         }
+        if(product.getImages() != null) {
+            for(ProductImage image : product.getImages()) {
+                productDTO.addImageBytes(image.getId(), getImage(image.getPath()));
+            }
+        }
+
+
         return productDTO;
     }
 
@@ -103,10 +143,11 @@ public class ProductResource {
     @PostMapping("/edit")
     @PreAuthorize("hasRole('ADMIN') or @productsService.isSellerOfProduct(authentication.name, #id)")
     @ResponseBody
-    public ResponseEntity<Object> edit(@RequestParam(value = "image", required = false) MultipartFile image,
-                                           @RequestParam("product") String productString,
-                                           @RequestParam("attributes") String attributesString,
-                                           @RequestParam("id") int id) throws JsonProcessingException
+    public ResponseEntity<Object> edit(@RequestParam(value = "avatar", required = false) MultipartFile avatar,
+                                       @RequestParam("product") String productString,
+                                       @RequestParam("attributes") String attributesString,
+                                       @RequestParam("id") int id,
+                                       @RequestParam(value = "images", required = false) MultipartFile[] images) throws JsonProcessingException
     {
         // Converting json to DTObjects
         ProductDTO productDTO = objectMapper.readValue(productString, ProductDTO.class);
@@ -115,8 +156,7 @@ public class ProductResource {
         // Input validation
         FormEditProduct form = new FormEditProduct();
         form.setId(id);
-        form.setProduct(productDTO);
-        form.setAttributes(attributeValueDTOList);
+        form.setProduct(productDTO);form.setAttributes(attributeValueDTOList);
         BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(form, "form");
         validator.validate(form, bindingResult);
 
@@ -139,17 +179,18 @@ public class ProductResource {
         productToEdit.setPrice(product.getPrice());
         productToEdit.setDescription(product.getDescription());
 
-        productsService.edit(productToEdit, image);
+        productsService.edit(productToEdit, avatar);
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
     @PostMapping(value = "/create", consumes = "multipart/form-data")
     @ResponseBody
-    public ResponseEntity<Object> create(@RequestParam("image") MultipartFile image,
-                                             @RequestParam("product") String productString,
-                                             @RequestParam("attributes") String attributesString,
-                                             @RequestParam("categoryName") String categoryName) throws JsonProcessingException
+    public ResponseEntity<Object> create(@RequestParam("avatar") MultipartFile avatar,
+                                         @RequestParam("product") String productString,
+                                         @RequestParam("attributes") String attributesString,
+                                         @RequestParam("categoryName") String categoryName,
+                                         @RequestParam(value = "images", required = false) MultipartFile[] images) throws JsonProcessingException
     {
         // Converting json to DTObjects
         ProductDTO productDTO = objectMapper.readValue(productString, ProductDTO.class);
@@ -176,7 +217,18 @@ public class ProductResource {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String sellerEmail = authentication.getName();
 
-        productsService.save(product, image, sellerEmail);
+        if(images != null) {
+            for (MultipartFile image : images) {
+                if(image != null) {
+                    productsService.addImage(product, image);
+                } else {
+                    System.out.println("FILE IS NULL");
+                }
+            }
+        } else {
+            System.out.println("EMPTY");
+        }
+        productsService.save(product, avatar, sellerEmail);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

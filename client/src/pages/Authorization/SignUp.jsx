@@ -1,10 +1,16 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import styles from './Authorization.module.css';
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import Validator from "../../util/Validator";
 import AccountService from "../../api/AccountService";
+import {useCookies} from "react-cookie";
+import {UserDetailsContext} from "../../context/UserDetails";
 
 const SignUp = () => {
+    const [cookies, setCookies] = useCookies(['token']);
+    const {setUserDetails, setIsAuth} = useContext(UserDetailsContext);
+    const navigate = useNavigate();
+
     const [form, setForm] = useState({
         email: "",
         password: "",
@@ -19,7 +25,20 @@ const SignUp = () => {
         if(!validate()) {
             AccountService.register(form)
                 .then(response => {
-                    console.log(response);
+                    if(response.status === 201) {
+                        setUserDetails({
+                            id: response.data.account.id,
+                            email: form.email,
+                            token: response.data.token,
+                            roles: response.data.account.roles.map((role) => role.name)
+                        });
+
+                        setCookies('token', response.data.token, { path: '/' });
+
+                        setIsAuth(true);
+
+                        navigate('/');
+                    }
                 }).catch(error => {
                     let errMsg = error.response.data;
                     if(errMsg === "Email already taken") {

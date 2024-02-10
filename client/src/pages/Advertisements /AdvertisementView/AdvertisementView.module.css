@@ -112,3 +112,19 @@
     font-weight: 600;
     font-size: 16px;
 }
+
+.images {
+    margin-top: 25px;
+    background-color: #fafafa;
+    padding: 15px;
+    border: 2px solid #eaeaea;
+    display: grid;
+    justify-content: center;
+    grid-template-columns: repeat(3, 375px);
+    grid-auto-rows: 300px;
+    grid-gap: 10px;
+}
+
+.imageContainer {
+    cursor: pointer;
+}
