@@ -90,4 +90,27 @@ public class Product {
         image.setProduct(this);
         images.add(image);
     }
+
+    public ProductImage findImageById(int imageId) {
+        if(images != null) {
+            for(ProductImage img : images) {
+                if(img.getId() == imageId) {
+                    return img;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public void removeImage(int imageId) {
+        if(images != null) {
+            for(ProductImage img : images) {
+                if(img.getId() == imageId) {
+                    images.remove(img);
+                    break;
+                }
+            }
+        }
+    }
 }

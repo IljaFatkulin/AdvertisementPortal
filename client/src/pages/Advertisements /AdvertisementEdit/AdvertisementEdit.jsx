@@ -19,6 +19,8 @@ const AdvertisementEdit = () => {
 
     const [images, setImages] = useState([]);
     const [editedImages, setEditedImages] = useState([]);
+    const [newImages, setNewImages] = useState([]);
+    const [imagesToDelete, setImagesToDelete] = useState([]);
 
     useEffect(() => {
         AdvertisementService.getById(id)
@@ -74,7 +76,7 @@ const AdvertisementEdit = () => {
         e.preventDefault();
 
         console.log(editedImages);
-        AdvertisementService.edit(product, attributes, id, editedImages, userDetails)
+        AdvertisementService.edit(product, attributes, id, editedImages, newImages, imagesToDelete, userDetails)
             .then(response => {
                 if(response.data === 'OK') {
                     navigate('/advertisements/' + category + '/' + id);
@@ -111,6 +113,28 @@ const AdvertisementEdit = () => {
 
         setImages([...updatedImages, { id: id, image: url, type: "url" }]);
         setEditedImages([...editedImages, {id: id, image: file}]);
+    }
+
+    const handleAddImage = (e) => {
+        e.preventDefault();
+        setNewImages([...newImages, {id: newImages.length, image: null}]);
+    }
+
+    const handleImageAdd = (e, id) => {
+        e.preventDefault();
+        const updatedImages = newImages.map(image => {
+            if(image.id === id) {
+                image.image = e.target.files[0];
+            }
+            return image;
+        });
+        setNewImages(updatedImages);
+    }
+
+    const handleDeleteImage = (id) => {
+        setImagesToDelete([...imagesToDelete, id]);
+        const updatedImages = images.filter(image => image.id !== id);
+        setImages(updatedImages);
     }
 
     return (
@@ -193,26 +217,44 @@ const AdvertisementEdit = () => {
                         {images.length > 0 &&
                             images.map(image =>
                                 <div key={image.id}>
-                                    {/*<ImageConverter data={image.image} className={styles.imageEdit}/>*/}
-                                    <label htmlFor={`imageInput${image.id}`}>
-                                        {image.type === "bytes"
-                                        ?
-                                            <ImageConverter data={image.image} className={styles.imageEdit}/>
-                                        :
-                                            <img src={image.image} alt={`Image ${image.id}`} className={styles.imageEdit} />
-                                        }
-                                    </label>
-                                    <input
-                                        id={`imageInput${image.id}`}
-                                        type="file"
-                                        name={`avatar${image.id}`}
-                                        accept="image/jpeg, image/png, image/jpg"
-                                        onChange={(e) => handleImageChange(e, image.id)}
-                                        style={{ display: "none" }}
-                                    />
+                                    <div style={{display: "flex", flexDirection:"column", alignItems:"center"}}>
+                                    <div onClick={() => handleDeleteImage(image.id)} className={styles.closeButton} style={{alignSelf: "start", position:"absolute"}}>X</div>
+                                        <label htmlFor={`imageInput${image.id}`}>
+                                            {image.type === "bytes"
+                                            ?
+                                                <ImageConverter data={image.image} className={styles.imageEdit}/>
+                                            :
+                                                <img src={image.image} alt={`Image ${image.id}`} className={styles.imageEdit} />
+                                            }
+                                        </label>
+                                        <input
+                                            id={`imageInput${image.id}`}
+                                            type="file"
+                                            name={`avatar${image.id}`}
+                                            accept="image/jpeg, image/png, image/jpg"
+                                            onChange={(e) => handleImageChange(e, image.id)}
+                                            style={{ display: "none" }}
+                                        />
+                                    </div>
                                 </div>
                             )
                         }
+                    </div>
+
+                    <div>
+                        <p>Images:</p>
+                        {newImages.length > 0 &&
+                            newImages.map(image =>
+                                <input
+                                    key={image.id}
+                                    type="file"
+                                    name={"image" + image.id}
+                                    accept="image/jpeg, image/png, image/jpg"
+                                    onChange={(e) => handleImageAdd(e, image.id)}
+                                />
+                            )
+                        }
+                        <button onClick={handleAddImage}>Add image</button>
                     </div>
 
                     <div className={styles.buttons}>

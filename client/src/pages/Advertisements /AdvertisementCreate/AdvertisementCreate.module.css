@@ -74,3 +74,14 @@
     grid-template-columns: repeat(3, 200px);
     gap: 10px;
 }
+
+.closeButton {
+    width: 25px;
+    height: 25px;
+    background: #f35050a8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* border-radius: 25px; */
+    cursor: pointer;
+}

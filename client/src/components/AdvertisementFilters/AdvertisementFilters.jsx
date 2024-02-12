@@ -3,7 +3,6 @@ import { Form, Button } from 'react-bootstrap';
 import styles from './AdvertisementFilters.module.css';
 
 const AdvertisementFilters = ({ filters, setFilters, onFiltersChange, isFiltersVisible,setIsFiltersVisible }) => {
-    console.log(filters);
     const handleFilterValueChange = (name, value) => {
         const updatedFilters = filters.map(attribute => {
             if (attribute.name === name) {

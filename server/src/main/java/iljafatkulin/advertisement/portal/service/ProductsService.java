@@ -153,6 +153,19 @@ public class ProductsService {
     }
 
     @Transactional
+    public void edit(Product product, MultipartFile avatar, Integer[] imagesToDeleteIds) {
+        if(imagesToDeleteIds != null) {
+            for (int imgId : imagesToDeleteIds) {
+                ProductImage img = productImageRepository.findById(imgId).get();
+                productImageRepository.delete(img);
+                product.getImages().remove(img);
+            }
+        }
+//        productsRepository.save(product);
+        edit(product, avatar);
+    }
+
+    @Transactional
     public void clearFromAttributes(Product product) {
         productAttributeValuesRepository.deleteAll(product.getAttributes());
         product.getAttributes().clear();
@@ -179,14 +192,6 @@ public class ProductsService {
                 productImageToEdit.setPath(saveProductImage(image));
             }
         }
-    }
-
-    @Transactional
-    public Product removeImages(Product product) {
-        List<ProductImage> images = product.getImages();
-        product.setImages(null);
-        productImageRepository.deleteAll(images);
-        return productsRepository.save(product);
     }
 
 

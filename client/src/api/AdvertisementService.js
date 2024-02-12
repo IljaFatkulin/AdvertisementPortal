@@ -89,7 +89,7 @@ export default class AdvertisementService {
             });
     }
 
-    static edit(product, attributes, id, images, userDetails) {
+    static edit(product, attributes, id, images, newImages, imagesToDelete, userDetails) {
         const formData = new FormData();
         if(product.avatar) {
             formData.append('avatar', product.avatar);
@@ -102,6 +102,14 @@ export default class AdvertisementService {
         images.forEach(image => {
             formData.append('images', image.image);
             formData.append('imagesIds', image.id);
+        });
+
+        newImages.forEach(image => {
+            formData.append('newImages', image.image);
+        });
+
+        imagesToDelete.forEach(id => {
+            formData.append('imagesToDelete', id);
         });
 
         // formData.append('images', images);

@@ -149,7 +149,9 @@ public class ProductResource {
                                        @RequestParam("attributes") String attributesString,
                                        @RequestParam("id") int id,
                                        @RequestParam(value = "images", required = false) MultipartFile[] images,
-                                        @RequestParam(value = "imagesIds", required = false) Integer[] imagesIds) throws JsonProcessingException
+                                       @RequestParam(value = "imagesIds", required = false) Integer[] imagesIds,
+                                       @RequestParam(value = "newImages", required = false) MultipartFile[] newImages,
+                                       @RequestParam(value = "imagesToDelete", required = false) Integer[] imagesToDeleteIds) throws JsonProcessingException
     {
         // Converting json to DTObjects
         ProductDTO productDTO = objectMapper.readValue(productString, ProductDTO.class);
@@ -190,11 +192,22 @@ public class ProductResource {
                 }
             // }
             }
-        } else {
-            System.out.println("NO IMAGESSSSS IN EDIT");
+        }
+        if(newImages != null) {
+            for(MultipartFile img : newImages) {
+                if(img != null) {
+                    productsService.addImage(productToEdit, img);
+                } else {
+                    System.out.println("FILE IS NULL");
+                }
+            }
         }
 
-        productsService.edit(productToEdit, avatar);
+        if(imagesToDeleteIds != null) {
+            productsService.edit(productToEdit, avatar, imagesToDeleteIds);
+        } else {
+            productsService.edit(productToEdit, avatar);
+        }
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
