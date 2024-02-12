@@ -1,7 +1,9 @@
-import React, {useState} from 'react';
+import React     from 'react';  
+import { Form, Button } from 'react-bootstrap';
 import styles from './AdvertisementFilters.module.css';
 
 const AdvertisementFilters = ({ filters, setFilters, onFiltersChange, isFiltersVisible,setIsFiltersVisible }) => {
+    console.log(filters);
     const handleFilterValueChange = (name, value) => {
         const updatedFilters = filters.map(attribute => {
             if (attribute.name === name) {
@@ -34,11 +36,21 @@ const AdvertisementFilters = ({ filters, setFilters, onFiltersChange, isFiltersV
                     {filters.map(filter => (
                         <div key={filter.id}>
                             <p>{filter.name}</p>
-                            <input
+                            {/* <input
                                 type="text"
                                 value={filter.value}
                                 onChange={e => handleFilterValueChange(filter.name, e.target.value)}
-                            />
+                            /> */}
+                            <select
+                                className={styles.FilterSelect}
+                                value={filter.value}
+                                onChange={e => handleFilterValueChange(filter.name, e.target.value)}
+                            >
+                                <option value="">Select...</option>
+                                {filter.options.map(option => (
+                                    <option key={option} value={option}>{option}</option>
+                                ))}
+                            </select>
                         </div>
                     ))}
                     <button onClick={handleClose}>Filter</button>

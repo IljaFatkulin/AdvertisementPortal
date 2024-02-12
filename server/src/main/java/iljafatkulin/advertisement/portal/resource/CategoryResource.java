@@ -3,6 +3,7 @@ package iljafatkulin.advertisement.portal.resource;
 import iljafatkulin.advertisement.portal.dto.AttributeDTO;
 import iljafatkulin.advertisement.portal.dto.CategoryDTO;
 import iljafatkulin.advertisement.portal.dto.CategoryWithAttributesDTO;
+import iljafatkulin.advertisement.portal.dto.AttributeOptionsDTO;
 import iljafatkulin.advertisement.portal.exception.CategoryNotFoundException;
 import iljafatkulin.advertisement.portal.request.*;
 import iljafatkulin.advertisement.portal.model.Category;
@@ -63,8 +64,10 @@ public class CategoryResource {
     }
 
     @GetMapping("/{name}/attributes")
-    public List<AttributeDTO> categoryAttributes(@PathVariable("name") String name) {
-        return ObjectConverter.convertList(categoriesService.getCategoryAttributes(name), AttributeDTO.class);
+    // public List<AttributeDTO> categoryAttributes(@PathVariable("name") String name) {
+    public List<AttributeOptionsDTO> categoryAttributes(@PathVariable("name") String name) {
+        // return ObjectConverter.convertList(categoriesService.getCategoryAttributes(name), AttributeDTO.class);
+        return categoriesService.getCategoryAttributeOptions(name);
     }
 
     @PostMapping("/attribute/remove")

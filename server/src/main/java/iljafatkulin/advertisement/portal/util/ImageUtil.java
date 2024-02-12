@@ -9,7 +9,7 @@ import java.nio.file.Paths;
 import java.util.UUID;
 
 public class ImageUtil {
-    private final static String imageFolderPath = "/Users/iljafatkulin/IdeaProjects/Advertisement-Portal/images";
+    private final static String imageFolderPath = "/server/images";
 
     public static String saveImage(MultipartFile image, String path) {
         try {
@@ -26,8 +26,7 @@ public class ImageUtil {
 
             return path + fileName;
         } catch (IOException e) {
-            System.out.println(e.getMessage());
-            System.out.println("Image was not uploaded");
+            System.out.println("Image was not uploaded, Error: " + e.getMessage());
         }
 
         return null;

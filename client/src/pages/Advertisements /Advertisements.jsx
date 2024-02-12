@@ -37,7 +37,9 @@ const Advertisements = () => {
     useEffect(() => {
         CategoryService.getCategoryAttributes(category)
             .then(response => {
-                setFilters(response.map(attribute => ({ ...attribute, value: '' })));
+                const updatedAttributes = response.map(attribute => ({ ...attribute, value: '' }));
+
+                setFilters(updatedAttributes);
             });
 
         fetchPagesCount();

@@ -218,6 +218,7 @@ public class ProductResource {
         String sellerEmail = authentication.getName();
 
         if(images != null) {
+            System.out.println("IMAGES ARE HERE ");
             for (MultipartFile image : images) {
                 if(image != null) {
                     productsService.addImage(product, image);
@@ -245,7 +246,7 @@ public class ProductResource {
     }
 
     private byte[] getImage(String path) throws IOException {
-        File file = new File("/Users/iljafatkulin/IdeaProjects/Advertisement-Portal/images/" + path);
+        File file = new File("/server/images/" + path);
         if(file.exists()) {
             InputStream in = new FileInputStream(file);
 

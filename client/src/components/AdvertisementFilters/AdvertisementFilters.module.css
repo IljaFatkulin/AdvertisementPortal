@@ -38,3 +38,12 @@
 .filters button {
     margin: 0;
 }
+
+.FilterSelect {
+    width: 100%;
+    border-radius: 5px;
+    padding: 10px;
+    background: transparent;
+    border: 2px solid #2154F2;
+    outline: none;
+}

@@ -5,6 +5,7 @@ import iljafatkulin.advertisement.portal.exception.CategoryNotFoundException;
 import iljafatkulin.advertisement.portal.model.Attribute;
 import iljafatkulin.advertisement.portal.model.Category;
 import iljafatkulin.advertisement.portal.model.Product;
+import iljafatkulin.advertisement.portal.model.ProductAttributeValue;
 import iljafatkulin.advertisement.portal.repositories.AttributesRepository;
 import iljafatkulin.advertisement.portal.repositories.CategoriesRepository;
 import iljafatkulin.advertisement.portal.repositories.ProductsRepository;
@@ -18,8 +19,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import iljafatkulin.advertisement.portal.dto.AttributeOptionsDTO;
 
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.HashMap;
+
 
 @Service
 @Transactional(readOnly = true)
@@ -86,7 +94,53 @@ public class CategoriesService {
 
     public List<Attribute> getCategoryAttributes(String name) {
         Category category = categoriesRepository.findFirstByNameIgnoreCase(name).orElseThrow(CategoryNotFoundException::new);
+        // List<Attribute> attributes = category.getAttributes();
         return category.getAttributes();
+
+        // Map<Integer, Set<String>> attributeValuesMap = new HashMap<>();
+        // List<ProductAttributeValue> t = new ArrayList<>();
+
+        // for(Attribute attribute : attributes) {
+        //     List<ProductAttributeValue> pavs = attribute.getProducts();
+        //     Set<String> values = new HashSet<>();
+
+        //     for(ProductAttributeValue pav : pavs) {
+        //         String value = pav.getValue();
+        //         values.add(value);
+        //     }
+
+        //     attributeValuesMap.put(attribute.getId(), values);
+        // }
+
+        // System.out.println(attributeValuesMap);
+        // System.out.println(attributes);
+        // return attributes;
+    }
+
+    public List<AttributeOptionsDTO> getCategoryAttributeOptions(String name) {
+        Category category = categoriesRepository.findFirstByNameIgnoreCase(name).orElseThrow(CategoryNotFoundException::new);
+        List<Attribute> attributes = category.getAttributes();
+
+        List<AttributeOptionsDTO> attributeOptionsList = new ArrayList<>();
+
+        for (Attribute attribute : attributes) {
+            List<ProductAttributeValue> pavs = attribute.getProducts();
+            Set<String> values = new HashSet<>();
+
+            for (ProductAttributeValue pav : pavs) {
+                String value = pav.getValue();
+                values.add(value);
+            }
+
+            AttributeOptionsDTO dto = new AttributeOptionsDTO();
+            dto.setId(attribute.getId());
+            dto.setName(attribute.getName());
+            dto.setOptions(new ArrayList<>(values));
+            attributeOptionsList.add(dto);
+        }
+
+        // System.out.println(attributeOptionsList);
+        return attributeOptionsList;
     }
 
     @Transactional

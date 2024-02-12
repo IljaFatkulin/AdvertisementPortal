@@ -1,0 +1,15 @@
+FROM maven:3.8.5-openjdk-17
+
+WORKDIR /server
+
+COPY ./pom.xml .
+RUN mvn dependency:go-offline
+
+COPY . .
+
+RUN mkdir -p /app/images/ads/avatars/
+RUN mkdir -p /app/images/ads/images/
+
+RUN mvn clean install -DskipTests
+
+CMD mvn -DskipTests spring-boot:run

@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  postgresdb:
+    image: postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1337
+      - POSTGRES_DB=advertisement_portal
+    ports:
+      - 5432:5432
+    volumes:
+      # - db:/var/lib/postgres
+      - ./docker/postgres-data:/var/lib/postgresql/data
+  app:
+    depends_on:
+      - postgresdb
+    build:
+      context: ./server
+      dockerfile: Dockerfile-server
+    restart: on-failure
+    ports:
+      - 8080:8080
+    volumes:
+      - ./server:/server
+      # - ./docker/m2:/root/.m2
+    environment:
+      SPRING_APPLICATION_JSON: '{
+        "spring.datasource.url"  : "jdbc:postgresql://postgresdb:5432/advertisement_portal",
+        "spring.datasource.username" : "postgres",
+        "spring.datasource.password" : "1337",
+        "spring.jpa.properties.hibernate.dialect" : "org.hibernate.dialect.PostgreSQLDialect",
+        "spring.jpa.hibernate.ddl-auto" : "update"
+      }'
+    # stdin_open: true
+    # tty: true
+  react-app:
+    build: 
+      context: ./client
+      dockerfile: Dockerfile-client
+    ports:
+      - 3000:3000
+    volumes:
+      - ./client:/app
+    command: npm start
+# volumes:
+#   db:
