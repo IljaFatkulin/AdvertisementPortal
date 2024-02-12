@@ -99,6 +99,18 @@ export default class AdvertisementService {
         formData.append('attributes', JSON.stringify(attributes));
         formData.append('id', id);
 
+        images.forEach(image => {
+            formData.append('images', image.image);
+            formData.append('imagesIds', image.id);
+        });
+
+        // formData.append('images', images);
+        // images.forEach((image, index) => {
+        //     formData.append(`images[${index}].id`, image.id);
+        //     formData.append(`images[${index}].image`, image.image);
+        // });
+        
+
         const authAxios = addAuthHeader(userDetails);
         return authAxios.post('/products/edit', formData, {
                 headers: {

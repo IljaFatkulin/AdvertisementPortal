@@ -30,7 +30,22 @@ const AdvertisementEdit = () => {
                 setAttributes(attrs);
 
                 delete response.avatar
-                setImages(response.imagesBytes);
+
+                // setImages(response.imagesBytes);
+                // console.log(response.imagesBytes)
+
+                const images = response.imagesBytes.map(image => {
+
+                    return {
+                        id: image.id,
+                        image: image.image,
+                        type: "bytes"
+                    };
+                });
+
+                setImages(images);
+
+
                 delete response.imagesBytes;
                 delete response.attributes;
 
@@ -58,7 +73,8 @@ const AdvertisementEdit = () => {
     function handleSubmit(e) {
         e.preventDefault();
 
-        AdvertisementService.edit(product, attributes, id, images, userDetails)
+        console.log(editedImages);
+        AdvertisementService.edit(product, attributes, id, editedImages, userDetails)
             .then(response => {
                 if(response.data === 'OK') {
                     navigate('/advertisements/' + category + '/' + id);
@@ -86,7 +102,15 @@ const AdvertisementEdit = () => {
     };
 
     const handleImageChange = (e, id) => {
-        setImages([...images, {id: id, image: e.target.files[0]}]);
+        // setImages([...images, {id: id, image: e.target.files[0]}]);
+    
+        const updatedImages = images.filter(image => image.id !== id);
+        const file = e.target.files[0];
+        const url = URL.createObjectURL(file);
+        console.log(url);
+
+        setImages([...updatedImages, { id: id, image: url, type: "url" }]);
+        setEditedImages([...editedImages, {id: id, image: file}]);
     }
 
     return (
@@ -171,7 +195,12 @@ const AdvertisementEdit = () => {
                                 <div key={image.id}>
                                     {/*<ImageConverter data={image.image} className={styles.imageEdit}/>*/}
                                     <label htmlFor={`imageInput${image.id}`}>
-                                        <ImageConverter data={image.image} className={styles.imageEdit}/>
+                                        {image.type === "bytes"
+                                        ?
+                                            <ImageConverter data={image.image} className={styles.imageEdit}/>
+                                        :
+                                            <img src={image.image} alt={`Image ${image.id}`} className={styles.imageEdit} />
+                                        }
                                     </label>
                                     <input
                                         id={`imageInput${image.id}`}

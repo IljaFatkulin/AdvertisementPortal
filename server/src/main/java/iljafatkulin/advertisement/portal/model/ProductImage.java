@@ -23,7 +23,7 @@ public class ProductImage {
     @NotNull
     private String path;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "product_id", referencedColumnName = "id")
     private Product product;
 }

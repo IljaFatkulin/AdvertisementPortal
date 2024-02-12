@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import iljafatkulin.advertisement.portal.dto.AttributeValueDTO;
 import iljafatkulin.advertisement.portal.dto.ProductDTO;
 import iljafatkulin.advertisement.portal.dto.ProductDetailsDTO;
+import iljafatkulin.advertisement.portal.dto.EditedImageDTO;
 import iljafatkulin.advertisement.portal.model.Attribute;
 import iljafatkulin.advertisement.portal.model.Category;
 import iljafatkulin.advertisement.portal.model.Product;
@@ -147,7 +148,8 @@ public class ProductResource {
                                        @RequestParam("product") String productString,
                                        @RequestParam("attributes") String attributesString,
                                        @RequestParam("id") int id,
-                                       @RequestParam(value = "images", required = false) MultipartFile[] images) throws JsonProcessingException
+                                       @RequestParam(value = "images", required = false) MultipartFile[] images,
+                                        @RequestParam(value = "imagesIds", required = false) Integer[] imagesIds) throws JsonProcessingException
     {
         // Converting json to DTObjects
         ProductDTO productDTO = objectMapper.readValue(productString, ProductDTO.class);
@@ -178,6 +180,19 @@ public class ProductResource {
         productToEdit.setName(product.getName());
         productToEdit.setPrice(product.getPrice());
         productToEdit.setDescription(product.getDescription());
+        if(images != null && imagesIds != null) {
+            for(int i = 0; i < imagesIds.length; i++) {
+            // for (EditedImageDTO image : images) {
+                if(images[i] != null) {
+                    productsService.editImage(productToEdit, imagesIds[i], images[i]);
+                } else {
+                    System.out.println("FILE IS NULL");
+                }
+            // }
+            }
+        } else {
+            System.out.println("NO IMAGESSSSS IN EDIT");
+        }
 
         productsService.edit(productToEdit, avatar);
 

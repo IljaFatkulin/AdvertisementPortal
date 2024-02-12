@@ -9,6 +9,7 @@ import iljafatkulin.advertisement.portal.model.ProductImage;
 import iljafatkulin.advertisement.portal.repositories.AccountRepository;
 import iljafatkulin.advertisement.portal.repositories.ProductAttributeValuesRepository;
 import iljafatkulin.advertisement.portal.repositories.ProductsRepository;
+import iljafatkulin.advertisement.portal.repositories.ProductImageRepository;
 import iljafatkulin.advertisement.portal.util.ImageUtil;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Hibernate;
@@ -33,6 +34,7 @@ public class ProductsService {
     private final ProductsRepository productsRepository;
     private final ProductAttributeValuesRepository productAttributeValuesRepository;
     private final AccountRepository accountRepository;
+    private final ProductImageRepository productImageRepository;
 
     public List<Product> findAll() {
         return productsRepository.findAll();
@@ -162,6 +164,29 @@ public class ProductsService {
         ProductImage productImage = new ProductImage();
         productImage.setPath(saveProductImage(image));
         product.addImage(productImage);
+    }
+
+    @Transactional
+    public void editImage(Product product, int imageId, MultipartFile image) {
+        List<ProductImage> productImages = product.getImages();
+
+        ProductImage productImageToEdit = null;
+
+        for(ProductImage img : productImages) {
+            if(img.getId() == imageId) {
+                productImageToEdit = img;
+                ImageUtil.deleteImage(img.getPath());
+                productImageToEdit.setPath(saveProductImage(image));
+            }
+        }
+    }
+
+    @Transactional
+    public Product removeImages(Product product) {
+        List<ProductImage> images = product.getImages();
+        product.setImages(null);
+        productImageRepository.deleteAll(images);
+        return productsRepository.save(product);
     }
 
 

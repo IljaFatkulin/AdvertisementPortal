@@ -90,10 +90,4 @@ public class Product {
         image.setProduct(this);
         images.add(image);
     }
-
-    public void removeImage(ProductImage image) {
-        if(images != null) {
-            images.remove(image);
-        }
-    }
 }
