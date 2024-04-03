@@ -35,3 +35,15 @@
 .searchPrice {
     width: 100px;
 }
+
+.selectView {
+    margin-top: 20px;
+    width: 150px;
+    height: 40px;
+    border: 3px solid #2154F2;
+    background-color: #2154F2;
+    color: white;
+    font-weight: 700;
+    font-size: 18px;
+    border-radius: 10px;
+}

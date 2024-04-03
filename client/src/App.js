@@ -21,6 +21,10 @@ function App() {
     const [cookies] = useCookies(['token']);
 
     useEffect(() => {
+        AccountService.test().then(r => console.log(r)).catch(e => console.log(e));
+        setTimeout(() => {
+            console.log(window.userUniqueId);
+        }, 500);
         if(cookies.token) {
             AccountService.verifyWithToken(cookies.token)
                 .then(response => {

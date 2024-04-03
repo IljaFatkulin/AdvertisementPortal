@@ -1,3 +1,12 @@
+.productsTable {
+    margin-top: 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-inline: 10%;
+}
+
 .products {
     margin-top: 25px;
     display: grid;

@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import AdvertisementService from "../../api/AdvertisementService";
 import styles from './AdvertisementSearch.module.css';
 
-const AdvertisementSearch = ({setAdvertisements, category, setPages, onFilterClear}) => {
+const AdvertisementSearch = ({setAdvertisements, category, setPages, onFilterClear, setViewType}) => {
     const [form, setForm] = useState({
         name: '',
         min: '',
@@ -65,6 +65,11 @@ const AdvertisementSearch = ({setAdvertisements, category, setPages, onFilterCle
 
             <button onClick={handleSubmit}>Search</button>
             <button onClick={filterClear}>Clear</button>
+            <select className={styles.selectView} onChange={(e) => setViewType(e.target.value)}>
+                <option value="card" disabled selected>View Type</option>
+                <option value="table">Table</option>
+                <option value="card">Card</option>
+            </select>
         </div>
     );
 };

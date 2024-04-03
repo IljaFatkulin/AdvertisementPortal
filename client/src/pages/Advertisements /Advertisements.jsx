@@ -12,7 +12,13 @@ import Pagination from "../../components/Pagination/Pagination";
 import AdvertisementFilters from "../../components/AdvertisementFilters/AdvertisementFilters";
 import AdvertisementSearch from "../../components/AdvertisementSearch/AdvertisementSearch";
 
+const ViewType = {
+    CARD: 'card',
+    TABLE: 'table',
+};
+
 const Advertisements = () => {
+    const [viewType, setViewType] = useState(ViewType.CARD);
     const [filters, setFilters] = useState([]);
 
     const {isAuth} = useAuth();
@@ -112,6 +118,7 @@ const Advertisements = () => {
                             category={category}
                             setPages={setPages}
                             onFilterClear={handleFilterClear}
+                            setViewType={setViewType}
                         />
 
                         <button onClick={() => setIsFiltersVisible(!isFiltersVisible)} className={styles.filterButton}>Filters</button>
@@ -130,7 +137,7 @@ const Advertisements = () => {
                         </Link>
                     }
 
-                    <div className={styles.products}>
+                    <div className={viewType === ViewType.CARD ? styles.products : styles.productsTable}>
                         {advertisements.length
                         ?
                             advertisements.map(advertisement =>
@@ -138,6 +145,7 @@ const Advertisements = () => {
                                     key={advertisement.id}
                                     advertisement={advertisement}
                                     category={category}
+                                    viewType={viewType}
                                 />
                             )
                         :

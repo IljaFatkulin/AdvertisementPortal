@@ -9,6 +9,7 @@ import ImageConverter from "../../../components/ImageConverter/ImageConverter";
 import {UserDetailsContext} from "../../../context/UserDetails";
 import useAuth from "../../../hooks/useAuth";
 import ImageModal from "../../../components/ImageModal/ImageModal";
+import ProductViewService from '../../../api/ProductViewService';
 
 const AdvertisementView = () => {
     // Get sellerId from url params
@@ -26,7 +27,30 @@ const AdvertisementView = () => {
     const navigate = useNavigate();
     const [error, setError] = useState();
 
+    const [views, setViews] = useState(0);
+
+    const registerView = () => {
+        if (userDetails.id) {
+            ProductViewService.register(userDetails.id, true, id);
+        } else {
+            const {
+                userUniqueId
+            } = window;
+
+            ProductViewService.register(userUniqueId, false, id);
+        }
+    };
+
     useEffect(() => {
+        registerView();
+        ProductViewService.getAllViews(id)
+            .then(r => {
+                setViews(r.data);
+                console.log(r.data);
+            }).catch(e => {
+                console.log(e);
+            });
+
         AdvertisementService.getById(id)
             .then(response => {
                 const ads = response;
@@ -109,6 +133,7 @@ const AdvertisementView = () => {
                                 <p className={"price"}>€{advertisement.price}</p>
                                 <p className={"description"}>{advertisement.description}</p>
                                 <p className={"seller"}>Seller: {advertisement.seller && <Link to={'/profile/' + advertisement.seller.email}>{advertisement.seller.email}</Link>}</p>
+                                <p>Views: {views}</p>
                             </div>
                         </div>
                         {advertisement.attributes.length

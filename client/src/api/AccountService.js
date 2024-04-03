@@ -8,6 +8,12 @@ export default class AccountService {
         });
     }
 
+    static test() {
+        return myAxios.post('/product_view/create', {
+            productId: "test",
+        });
+    }
+
     static authenticate(user) {
         return myAxios.post('/accounts/authenticate', {
             email: user.email,
