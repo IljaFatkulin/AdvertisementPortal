@@ -10,11 +10,13 @@ import {useNavigate, useParams} from "react-router-dom";
 import AdvertisementService from "../../api/AdvertisementService";
 import AdvertisementCard from "../../components/AdvertisementCard/AdvertisementCard";
 import ChangePasswordModal from "../../components/Modals/ChangePasswordModal/ChangePasswordModal";
+import useAuth from "../../hooks/useAuth";
 
 const Profile = () => {
     const {email} = useParams();
 
     const navigate = useNavigate();
+    const {isAdmin} = useAuth();
 
     const [isLoading] = useState(false);
     const {userDetails} = useContext(UserDetailsContext);
@@ -104,6 +106,8 @@ const Profile = () => {
                                         category={advertisement.category.name}
                                         sellerEmail={currentProfileEmail}
                                         key={advertisement.id}
+                                        viewType={'table'}
+                                        showViews={!email || isAdmin()}
                                     />
                                 )
                                 :

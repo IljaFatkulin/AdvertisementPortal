@@ -3,7 +3,7 @@ import styles from './AdvertisementCard.module.css';
 import ImageConverter from "../ImageConverter/ImageConverter";
 import {useNavigate} from "react-router-dom";
 
-const AdvertisementCard = ({advertisement, category, sellerEmail, viewType}) => {
+const AdvertisementCard = ({advertisement, category, sellerEmail, viewType, showViews}) => {
     const navigate = useNavigate();
 
     const view = (id) => {
@@ -15,7 +15,7 @@ const AdvertisementCard = ({advertisement, category, sellerEmail, viewType}) => 
     }
 
     return (
-        <div className={viewType === 'card' ? styles.item : styles.itemTable} onClick={() => view(advertisement.id)}>
+        <div className={viewType === 'table' ? styles.itemTable : styles.item} onClick={() => view(advertisement.id)}>
             <div className={styles.itemImageContainer}>
                 {advertisement.avatar
                     ?
@@ -27,6 +27,8 @@ const AdvertisementCard = ({advertisement, category, sellerEmail, viewType}) => 
             <div className={styles.itemInfo}>
                 <p className={styles.name}>{advertisement.name}</p>
                 <p className={styles.price}>€{advertisement.price}</p>
+                {viewType === 'table' && <p className={styles.views}>Posted at: {new Date(advertisement.createdAt).toLocaleDateString()}</p>}
+                {showViews && <p className={styles.views}>Views: {advertisement.viewCount}</p>}
             </div>
         </div>
     );

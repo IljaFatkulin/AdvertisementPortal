@@ -12,9 +12,11 @@ import SignIn from "../pages/Authorization/SignIn";
 import Profile from "../pages/Profile/Profile";
 import Logout from "../components/Logout";
 import SectionView from "../pages/Category/View/SectionView";
+import PDFGenerator from "../components/PDFGenerator/PDFGenerator";
 
 export const commonRoutes = [
     {path: '/', element: <Home/>},
+    {path: '/statistics/:category/:id', element: <PDFGenerator/>},
     {path: '/categories', element: <Categories/>},
 
     {path: '/error/notfound', element: <NotFound/>},
@@ -39,7 +41,7 @@ export const userRoutes = [
     {path: '/advertisements/:category/:id/edit', element: <AdvertisementEdit/>},
     {path: '/advertisements/:category/create', element: <AdvertisementCreate/>},
     {path: '/profile/:email?', element: <Profile/>},
-    {path: '/logout', element: <Logout/>}, 
+    {path: '/logout', element: <Logout/>},
 ];
 
 export const adminRoutes = [

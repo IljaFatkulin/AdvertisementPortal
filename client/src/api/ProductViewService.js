@@ -12,4 +12,8 @@ export default class ProductViewService {
     static getAllViews(productId) {
         return myAxios.get('/product_view/' + productId);
     }
+
+    static getAuthorizedViews(productId) {
+        return myAxios.get('/product_view/' + productId + '/true');
+    }
 }

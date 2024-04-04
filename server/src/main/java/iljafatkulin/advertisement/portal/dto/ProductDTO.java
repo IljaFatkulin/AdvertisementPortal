@@ -9,6 +9,7 @@ import lombok.ToString;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.Date;
 import java.util.Locale;
 
 @Getter
@@ -30,6 +31,10 @@ public class ProductDTO {
     private CategoryDTO category;
 
     private byte[] avatar;
+
+    private int viewCount;
+
+    private Date createdAt;
 
     public String getPrice() {
         DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols(Locale.US); // Используем точку в качестве разделителя

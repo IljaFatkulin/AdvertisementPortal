@@ -24,11 +24,12 @@
 
 .advertisements {
     margin-top: 25px;
-    display: grid;
+    /* display: grid; */
+    display: flex;
     justify-content: center;
-    grid-gap: 40px;
+    /* grid-gap: 40px;
     grid-template-columns: repeat(3, 300px);
-    grid-auto-rows: 400px;
+    grid-auto-rows: 400px; */
 }
 
 @media (max-width: 1100px) {

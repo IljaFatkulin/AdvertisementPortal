@@ -1,5 +1,6 @@
 package iljafatkulin.advertisement.portal.resource;
 
+import iljafatkulin.advertisement.portal.repositories.ProductsRepository;
 import iljafatkulin.advertisement.portal.request.*;
 import iljafatkulin.advertisement.portal.model.ProductView;
 import iljafatkulin.advertisement.portal.model.Product;
@@ -21,6 +22,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ProductViewResource {
     private final ProductViewRepository productViewRepository;
+    private final ProductsRepository productsRepository;
     private final ProductsService productsService;
 
     @GetMapping("/{id}")
@@ -43,6 +45,8 @@ public class ProductViewResource {
             return new ResponseEntity<>(HttpStatus.OK);
         }
         Product product = productsService.findById(form.getProductId());
+        product.setViewCount(product.getViewCount() + 1);
+        productsRepository.save(product);
         productViewRepository.save(new ProductView(null, product, form.isAuthorized(), form.getUserId()));
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

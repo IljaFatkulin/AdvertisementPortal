@@ -10,6 +10,7 @@ import {UserDetailsContext} from "../../../context/UserDetails";
 import useAuth from "../../../hooks/useAuth";
 import ImageModal from "../../../components/ImageModal/ImageModal";
 import ProductViewService from '../../../api/ProductViewService';
+import PDFGenerator from '../../../components/PDFGenerator/PDFGenerator';
 
 const AdvertisementView = () => {
     // Get sellerId from url params
@@ -133,7 +134,9 @@ const AdvertisementView = () => {
                                 <p className={"price"}>€{advertisement.price}</p>
                                 <p className={"description"}>{advertisement.description}</p>
                                 <p className={"seller"}>Seller: {advertisement.seller && <Link to={'/profile/' + advertisement.seller.email}>{advertisement.seller.email}</Link>}</p>
-                                <p>Views: {views}</p>
+                                <p>Posted at: {new Date(advertisement.createdAt).toLocaleDateString()}</p>
+                                {(sellerEmail === userDetails.email || isAdmin())&& <p>Views: {views}</p>}
+                                {(sellerEmail === userDetails.email || isAdmin())&& <Link to={'/statistics/' + category + '/' + id}>Open statistics</Link>}
                             </div>
                         </div>
                         {advertisement.attributes.length
