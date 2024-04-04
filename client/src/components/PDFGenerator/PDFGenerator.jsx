@@ -4,9 +4,13 @@ import jsPDF from 'jspdf';
 import ProductViewService from '../../api/ProductViewService';
 import AdvertisementService from "../../api/AdvertisementService";
 import 'jspdf-autotable';
+import Modal from "react-modal";
 import Loader from '../Loader/Loader';
+import styles2 from './../Modals/ChangePasswordModal/ChangePasswordModal.module.css';
+import styles from './../ImageModal/ImageModal.module.css';
 
-const PDFGenerator = () => {
+
+const PDFGenerator = ({isOpen, closeModal}) => {
     const {category, id} = useParams();
     const [advertisement, setAdvertisement] = useState({});
     const [views, setViews] = useState(0);
@@ -28,7 +32,7 @@ const PDFGenerator = () => {
             setAuthViews(r.data);
             console.log(r.data);
         }).catch(e => {
-            console.log(e);
+           console.log(e);
         });
 
         AdvertisementService.getById(id)
@@ -54,6 +58,15 @@ const PDFGenerator = () => {
     doc.save('details.pdf');
     };
 
+    const handleBackgroundClick = e => {
+        // Ensure that only clicks on the modal background will close the modal
+        if (e.target === e.currentTarget) {
+            closeModal();
+        }
+    };
+
+    if (!isOpen) return null;
+
     if(isLoading) {
         return (
             <Loader />
@@ -61,10 +74,19 @@ const PDFGenerator = () => {
     }
 
     return (
-    <div className='PDFGenerator'>
-        <Link to={`/advertisements/${category}/${id}`}><button>Back</button></Link>
-        <br />
-        <button onClick={generatePDF}>Download PDF</button>
+        <div className={styles.modal} onClick={handleBackgroundClick    }>
+        {/* <Modal
+            className={styles.changeModal}
+            ariaHideApp={false}
+            isOpen={isOpen}
+            onRequestClose={closeModal}
+            contentLabel="Details"
+        > */}
+    {/* <div className={styles.modalContent}> */}
+    <div className={styles2.changeModal}>
+        {/* <Link to={`/advertisements/${category}/${id}`}><button>Back</button></Link> */}
+        {/* <br /> */}
+        <button style={{height: '80px', background: "#DD9901"}} onClick={closeModal}>Close</button>
         <table id="my-table">
         <tbody>
             <tr>
@@ -101,6 +123,10 @@ const PDFGenerator = () => {
             </tr>
         </tbody>
         </table>
+        <button style={{height: '80px'}} onClick={generatePDF}>Download PDF</button>
+
+    </div>
+    {/* </Modal> */}
     </div>
     );
 };

@@ -77,6 +77,7 @@ const AdvertisementView = () => {
     }
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isDetailsOpen, setIsDetailsOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
 
     const increaseImage = (id) => {
@@ -136,7 +137,8 @@ const AdvertisementView = () => {
                                 <p className={"seller"}>Seller: {advertisement.seller && <Link to={'/profile/' + advertisement.seller.email}>{advertisement.seller.email}</Link>}</p>
                                 <p>Posted at: {new Date(advertisement.createdAt).toLocaleDateString()}</p>
                                 {(sellerEmail === userDetails.email || isAdmin())&& <p>Views: {views}</p>}
-                                {(sellerEmail === userDetails.email || isAdmin())&& <Link to={'/statistics/' + category + '/' + id}>Open statistics</Link>}
+                                {/* {(sellerEmail === userDetails.email || isAdmin())&& <Link to={'/statistics/' + category + '/' + id}>Open statistics</Link>} */}
+                                {(sellerEmail === userDetails.email || isAdmin())&& <button onClick={() => setIsDetailsOpen(true)}>Open statistics</button>}
                             </div>
                         </div>
                         {advertisement.attributes.length
@@ -167,6 +169,7 @@ const AdvertisementView = () => {
                     </div>
 
                     <ImageModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} image={selectedImage}/>
+                    <PDFGenerator isOpen={isDetailsOpen} closeModal={() => setIsDetailsOpen(false)}/>
                 </div>
     );
 };
