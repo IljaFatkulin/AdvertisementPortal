@@ -1,8 +1,8 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import AdvertisementService from "../../api/AdvertisementService";
 import styles from './AdvertisementSearch.module.css';
 
-const AdvertisementSearch = ({setAdvertisements, category, setPages, onFilterClear, setViewType}) => {
+const AdvertisementSearch = ({setAdvertisements, category, setPages, onFilterClear, setViewType, setSort}) => {
     const [form, setForm] = useState({
         name: '',
         min: '',
@@ -69,6 +69,16 @@ const AdvertisementSearch = ({setAdvertisements, category, setPages, onFilterCle
                 <option value="card" disabled selected>View Type</option>
                 <option value="table">Table</option>
                 <option value="card">Card</option>
+            </select>
+
+            <select className={styles.selectView} onChange={(e) => setSort(e.target.value)}>
+                <option value="" disabled selected>Sort</option>
+                <option value="createdAt_asc">Newest</option>
+                <option value="createdAt_desc">Oldest</option>
+                <option value="price_desc">Price high to low</option>
+                <option value="price_asc">Price low to high</option>
+                <option value="name_asc">Name ascending</option>
+                <option value="name_desc">Name descending</option>
             </select>
         </div>
     );

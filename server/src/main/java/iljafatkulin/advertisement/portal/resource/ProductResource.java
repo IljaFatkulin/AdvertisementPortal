@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -32,6 +33,7 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.domain.Sort;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -60,7 +62,9 @@ public class ProductResource {
                                   @RequestParam(name = "values", required = false) List<String> values,
                                   @RequestParam(name = "name", required = false) String name,
                                   @RequestParam(name = "minPrice", required = false) Double minPrice,
-                                  @RequestParam(name = "maxPrice", required = false) Double maxPrice
+                                  @RequestParam(name = "maxPrice", required = false) Double maxPrice,
+                                  @RequestParam(name = "sortBy", required = false) String sortBy,
+                                  @RequestParam(name = "order", required = false) String order
     ) throws IOException {
         Category category = categoriesService.findByName(categoryName);
         int categoryId = category.getId();
@@ -71,12 +75,41 @@ public class ProductResource {
         minPrice = minPrice != null ? minPrice : 0;
         maxPrice = maxPrice != null ? maxPrice : 0;
         if(!name.isEmpty() || minPrice > 0 || maxPrice > 0) {
-            products = productsService.searchByNameAndPriceAndCategory(name, minPrice, maxPrice, category);
+            String sort;
+            String direction;
+            System.out.println(sortBy);
+            System.out.println(order);
+            if (sortBy != null && !sortBy.isEmpty()) {
+                sort = sortBy;
+            } else {
+                sort = "id";
+            }
+            if (order != null && !order.isEmpty()) {
+                direction = order;
+            } else {
+                direction = "ASC";
+            }
+            products = productsService.searchByNameAndPriceAndCategory(name, minPrice, maxPrice, category, direction, sort);
         } else if(attributes != null && values != null) {
             products = productsService.findByAttributesAndValuesAndCategory(attributes, values, category);
         } else if (page != null && limit != null) {
-            PageRequest pageRequest = PageRequest.of(page, limit);
-            products = productsService.findByCategoryId(categoryId, pageRequest);
+            String sort;
+            String order2;
+            System.out.println(sortBy);
+            System.out.println(order);
+            if (sortBy != null && !sortBy.isEmpty()) {
+                sort = sortBy;
+            } else {
+                sort = "id";
+            }
+            if (order != null && !order.isEmpty()) {
+                order2 = order;
+            } else {
+                order2 = "ASC";
+            }
+            Sort.Direction direction = Sort.Direction.fromString(order2.toUpperCase());
+            Pageable pageable = PageRequest.of(page, limit, Sort.by(direction, sort));
+            products = productsService.findByCategoryId(categoryId, pageable);
         } else {
             products = new ArrayList<>();
         }

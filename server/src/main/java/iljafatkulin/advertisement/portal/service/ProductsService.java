@@ -14,6 +14,8 @@ import iljafatkulin.advertisement.portal.util.ImageUtil;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Hibernate;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,12 +46,12 @@ public class ProductsService {
         return productsRepository.countByCategoryName(categoryName);
     }
 
-    public List<Product> findByCategoryId(int categoryId) {
-        return productsRepository.findByCategoryIdOrderById(categoryId);
-    }
+//    public List<Product> findByCategoryId(int categoryId) {
+//        return productsRepository.findByCategoryIdOrderById(categoryId, Sort.by(Sort.Direction.ASC, "price"));
+//    }
 
-    public List<Product> findByCategoryId(int categoryId, PageRequest pageRequest) {
-        return productsRepository.findByCategoryIdOrderById(categoryId, pageRequest).getContent();
+    public List<Product> findByCategoryId(int categoryId, Pageable pageable) {
+        return productsRepository.findByCategoryId(categoryId, pageable).getContent();
     }
 
     public Product findById(int id) {
@@ -203,7 +205,9 @@ public class ProductsService {
         return ImageUtil.saveImage(image, "/ads/images/");
     }
 
-    public List<Product> searchByNameAndPriceAndCategory(String name, Double minPrice, Double maxPrice, Category category) {
-        return productsRepository.findByStartingNameAndPriceRangeIgnoreCase(name.toLowerCase(), minPrice, maxPrice, category);
+    public List<Product> searchByNameAndPriceAndCategory(String name, Double minPrice, Double maxPrice, Category category, String direction, String sort) {
+//        return productsRepository.findByStartingNameAndPriceRangeIgnoreCase(name.toLowerCase(), minPrice, maxPrice, category, sort);
+        return productsRepository.findByStartingNameAndPriceRangeIgnoreCase(name.toLowerCase(), minPrice, maxPrice, category, direction, sort);
+//        return productsRepository.findByCategoryAndNameStartingWithIgnoreCaseAndPriceBetween(category, name.toLowerCase(), minPrice, maxPrice, sort);
     }
 }

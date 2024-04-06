@@ -2,8 +2,9 @@ import { myAxios, addAuthHeader } from "../config/axiosConfig";
 import {remove} from "react-modal/lib/helpers/classList";
 
 export default class AdvertisementService {
-    static getPage(category, page) {
-        return myAxios.get('/products?category=' + category + '&page=' + page + '&limit=12')
+    static getPage(category, page, sortBy, order) {
+        const sort = sortBy && order ? `&sortBy=${sortBy}&order=${order}` : '';
+        return myAxios.get('/products?category=' + category + '&page=' + page + '&limit=12' + sort)
             .then(response => {
                 return response.data;
             })
@@ -15,12 +16,10 @@ export default class AdvertisementService {
     static getPageWithFilter(category, page, filters) {
         const filteredAttributes = filters.filter(filter => filter.value);
 
-        // Создаем параметры запроса только для атрибутов с непустыми значениями
         const queryParams = new URLSearchParams({
             category: category,
         });
 
-        // Добавляем параметры фильтрации, если они есть
         filteredAttributes.forEach(filter => {
             queryParams.append('attributes', filter.name);
             queryParams.append('values', filter.value);
@@ -144,11 +143,11 @@ export default class AdvertisementService {
             });
     }
 
-    static searchAdvertisements(name, minPrice, maxPrice, category) {
+    static searchAdvertisements(name, minPrice, maxPrice, category, sortBy, order) {
         name = name ? name : '';
         minPrice = minPrice ? minPrice : 0;
         maxPrice = maxPrice ? maxPrice : 0;
-        return myAxios.get('/products?category=' + category + '&name=' + name + '&minPrice=' + minPrice + '&maxPrice=' + maxPrice)
+        return myAxios.get('/products?category=' + category + '&name=' + name + '&minPrice=' + minPrice + '&maxPrice=' + maxPrice + '&sortBy=' + sortBy + '&order=' + order)
             .then(response => {
                 return response.data;
             })

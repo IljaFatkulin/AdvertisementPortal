@@ -20,6 +20,7 @@ const ViewType = {
 const Advertisements = () => {
     const [viewType, setViewType] = useState(ViewType.CARD);
     const [filters, setFilters] = useState([]);
+    const [sort, setSort] = useState('');
 
     const {isAuth} = useAuth();
 
@@ -53,18 +54,24 @@ const Advertisements = () => {
 
     useEffect(() => {
         fetchAdvertisements();
-    }, [currentPage]);
+    }, [currentPage, sort]);
 
     function fetchAdvertisements() {
-        setIsLoading(true);
-        AdvertisementService.getPage(category, currentPage)
+        // setIsLoading(true);
+        let sortBy, oder;
+        if (sort) {
+            [sortBy, oder] = sort.split('_');
+        }
+        AdvertisementService.getPage(category, currentPage, sortBy, oder)
             .then(response => {
                 setAdvertisements(response);
 
+                console.log(response)
                 setIsLoading(false);
             })
             .catch(e => {
                 setIsLoading(false);
+                console.log(e)
                 setError(e.response.data);
             })
     }
@@ -119,6 +126,7 @@ const Advertisements = () => {
                             setPages={setPages}
                             onFilterClear={handleFilterClear}
                             setViewType={setViewType}
+                            setSort={setSort}
                         />
 
                         <button onClick={() => setIsFiltersVisible(!isFiltersVisible)} className={styles.filterButton}>Filters</button>
