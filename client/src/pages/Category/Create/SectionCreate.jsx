@@ -20,7 +20,7 @@ const SectionCreate = () => {
         CategoryService.createSection(name, userDetails)
             .then(response => {
                 if(response.status === 201) {
-                    navigate('/categories');
+                    navigate('/');
                 }
             }).catch(error => {
                 if(error.response.status === 400) {
@@ -35,7 +35,7 @@ const SectionCreate = () => {
                 <Navbar/>
                 <h1>Create section</h1>
                 <div className={"return"}>
-                    <Link to={'/categories'} id={"return"}><p className={"return-link"}>Categories</p></Link>
+                    <Link to={'/'} id={"return"}><p className={"return-link"}>Categories</p></Link>
                     <p>Create section</p>
                 </div>
             </div>

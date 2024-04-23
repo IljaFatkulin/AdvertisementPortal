@@ -3,11 +3,8 @@ import styles from './Authorization.module.css';
 import {Link, useNavigate} from "react-router-dom";
 import AccountService from "../../api/AccountService";
 import {UserDetailsContext} from "../../context/UserDetails";
-import {useCookies} from "react-cookie";
 
 const SignIn = () => {
-    const [cookies, setCookies] = useCookies(['token']);
-
     const {setUserDetails, setIsAuth} = useContext(UserDetailsContext);
     const [form, setForm] = useState({
         email: "",
@@ -32,7 +29,7 @@ const SignIn = () => {
                             roles: response.data.account.roles.map((role) => role.name)
                         });
 
-                        setCookies('token', response.data.token, { path: '/' });
+                        localStorage.setItem("token", response.data.token);
 
                         setIsAuth(true);
 

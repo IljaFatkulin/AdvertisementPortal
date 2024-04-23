@@ -126,7 +126,7 @@ const AdvertisementCreate = () => {
                 <Navbar/>
                 <h1>Create</h1>
                 <div className={"return"}>
-                    <Link to={'/categories'} id={"return"}><p className={"return-link"}>Categories</p></Link>
+                    <Link to={'/'} id={"return"}><p className={"return-link"}>Categories</p></Link>
                     <Link to={'/advertisements/' + category} id={"return"}><p className={"return-link"}>{category}</p></Link>
                     <p>Create</p>
                 </div>

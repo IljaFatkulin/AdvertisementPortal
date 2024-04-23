@@ -37,7 +37,7 @@ const Categories = ({create}) => {
     }, []);
 
     function viewCategory(id) {
-        navigate('/categories/' + id);
+        navigate('/' + id);
     }
 
     const handleAddCategory = (sectionId) => {
@@ -93,7 +93,7 @@ const Categories = ({create}) => {
                     <h1>{create ? 'Choose category' : 'Categories'}</h1>
                 </div>
                 {isAdmin() && !create &&
-                    <Link to={'/categories/create'} className={"create"}>
+                    <Link to={'/create'} className={"create"}>
                         <button className={"button-create"}>Create</button>
                     </Link>
                 }

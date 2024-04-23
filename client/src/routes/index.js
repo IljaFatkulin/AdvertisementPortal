@@ -8,6 +8,7 @@ import NotFound from "../pages/NotFound/NotFound";
 import Home from "../pages/Home/Home";
 import Categories from "../pages/Category/Categories";
 import SignUp from "../pages/Authorization/SignUp";
+import Favorite from "../pages/Favorite/Favorite";
 import SignIn from "../pages/Authorization/SignIn";
 import Profile from "../pages/Profile/Profile";
 import Logout from "../components/Logout";
@@ -15,9 +16,9 @@ import SectionView from "../pages/Category/View/SectionView";
 import PDFGenerator from "../components/PDFGenerator/PDFGenerator";
 
 export const commonRoutes = [
-    {path: '/', element: <Home/>},
+    // {path: '/', element: <Home/>},
     {path: '/statistics/:category/:id', element: <PDFGenerator/>},
-    {path: '/categories', element: <Categories/>},
+    {path: '/', element: <Categories/>},
 
     {path: '/error/notfound', element: <NotFound/>},
 
@@ -37,10 +38,11 @@ export const publicRoutes = [
 export const userRoutes = [
     ...commonRoutes,
 
-    {path: '/categories/choose', element: <Categories create={true}/>},
+    {path: '/choose', element: <Categories create={true}/>},
     {path: '/advertisements/:category/:id/edit', element: <AdvertisementEdit/>},
     {path: '/advertisements/:category/create', element: <AdvertisementCreate/>},
     {path: '/profile/:email?', element: <Profile/>},
+    {path: '/favorite', element: <Favorite/>},
     {path: '/logout', element: <Logout/>},
 ];
 
@@ -48,7 +50,7 @@ export const adminRoutes = [
     ...commonRoutes,
     ...userRoutes,
 
-    {path: '/categories/:id', element: <CategoryView/>},
+    {path: '/:id', element: <CategoryView/>},
     {path: '/sections/:id', element: <SectionView/>},
-    {path: '/categories/create', element: <SectionCreate/>},
+    {path: '/create', element: <SectionCreate/>},
 ]

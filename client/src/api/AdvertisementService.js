@@ -67,7 +67,7 @@ export default class AdvertisementService {
         formData.append('categoryName', category);
 
         images.forEach(image => {
-            formData.append('images', image.image); // 'images' - это имя поля для каждого файла
+            formData.append('images', image.image);
         });
 
         const authAxios = addAuthHeader(userDetails);
@@ -116,7 +116,6 @@ export default class AdvertisementService {
         //     formData.append(`images[${index}].id`, image.id);
         //     formData.append(`images[${index}].image`, image.image);
         // });
-        
 
         const authAxios = addAuthHeader(userDetails);
         return authAxios.post('/products/edit', formData, {
@@ -151,5 +150,10 @@ export default class AdvertisementService {
             .then(response => {
                 return response.data;
             })
+    }
+
+    static getFavorites(userDetails) {
+        const authAxios = addAuthHeader(userDetails);
+        return authAxios.get('/products/favoriteproducts/' + userDetails.id);
     }
 }

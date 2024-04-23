@@ -56,7 +56,7 @@ const CategoryView = () => {
     const handleDeleteCategory = () => {
         CategoryService.deleteCategory(id, userDetails)
             .then(() => {
-                navigate('/categories');
+                navigate('/');
             })
     }
 
@@ -67,7 +67,7 @@ const CategoryView = () => {
             .then(response => {
                 console.log(response.data);
                 if(response.status === 200) {
-                    navigate('/categories');
+                    navigate('/');
                 }
             }).catch(error => {
                 if(error.response.status === 400) {
@@ -90,7 +90,7 @@ const CategoryView = () => {
                         <Navbar/>
                         <h1>Create</h1>
                         <div className={"return"}>
-                            <Link to={'/categories'} id={"return"}><p className={"return-link"}>Categories</p></Link>
+                            <Link to={'/'} id={"return"}><p className={"return-link"}>Categories</p></Link>
                             <p>View</p>
                         </div>
                     </div>

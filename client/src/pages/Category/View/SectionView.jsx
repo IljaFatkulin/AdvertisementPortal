@@ -39,7 +39,7 @@ const SectionView = () => {
         CategoryService.deleteSection(id, userDetails)
             .then(response => {
                 if (response.status === 200) {
-                    navigate('/categories');
+                    navigate('/');
                 }
             }).finally(() => {
                 setIsLoading(false);
@@ -51,7 +51,7 @@ const SectionView = () => {
         CategoryService.renameSection(id, section.name, userDetails)
             .then(response => {
                 if(response.status === 200) {
-                    navigate('/categories');
+                    navigate('/');
                 }
             }).catch(error => {
                 if(error.response.status === 400) {
@@ -76,7 +76,7 @@ const SectionView = () => {
                         <Navbar/>
                         <h1>Create</h1>
                         <div className={"return"}>
-                            <Link to={'/categories'} id={"return"}><p className={"return-link"}>Categories</p></Link>
+                            <Link to={'/'} id={"return"}><p className={"return-link"}>Categories</p></Link>
                             <p>View</p>
                         </div>
                     </div>

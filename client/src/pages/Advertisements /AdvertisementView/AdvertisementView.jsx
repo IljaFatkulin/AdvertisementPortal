@@ -11,6 +11,7 @@ import useAuth from "../../../hooks/useAuth";
 import ImageModal from "../../../components/ImageModal/ImageModal";
 import ProductViewService from '../../../api/ProductViewService';
 import PDFGenerator from '../../../components/PDFGenerator/PDFGenerator';
+import AccountService from '../../../api/AccountService';
 
 const AdvertisementView = () => {
     // Get sellerId from url params
@@ -19,7 +20,7 @@ const AdvertisementView = () => {
     const sellerEmail = queryParams.get('seller');
 
 
-    const {isAdmin} = useAuth();
+    const {isAdmin, isAuth} = useAuth();
     const {userDetails} = useContext(UserDetailsContext);
 
     const {category, id} = useParams();
@@ -27,6 +28,7 @@ const AdvertisementView = () => {
     const [advertisement, setAdvertisement] = useState({});
     const navigate = useNavigate();
     const [error, setError] = useState();
+    const [isAlreadyFavorite, setIsAlreadyFavorite] = useState(false);
 
     const [views, setViews] = useState(0);
 
@@ -41,6 +43,16 @@ const AdvertisementView = () => {
             ProductViewService.register(userUniqueId, false, id);
         }
     };
+
+    const fetchIsFavorite = () => {
+        AccountService.isFavorite(userDetails, id)
+        .then(response => {
+            console.log(response.data);
+            setIsAlreadyFavorite(response.data);
+        }).catch(e => {
+            console.log(e);
+        });
+    }
 
     useEffect(() => {
         registerView();
@@ -66,7 +78,11 @@ const AdvertisementView = () => {
             .catch(e => {
                 setIsLoading(false);
                 setError(e.response.data);
-            })
+            });
+
+        if (isAuth) {
+            fetchIsFavorite();
+        }
     }, []);
 
     function deleteAdvertisement(id) {
@@ -88,6 +104,26 @@ const AdvertisementView = () => {
         }
     }
 
+    const handleAddFavorite = () => {
+        AccountService.addFavorite(userDetails, id)
+            .then((r) => {
+                fetchIsFavorite();
+                console.log(r)
+            }).catch(e => {
+                console.log(e);
+            });
+    }
+
+    const handleDeleteFromFavorite = () => {
+        AccountService.deleteFavorite(userDetails, id)
+            .then((r) => {
+                fetchIsFavorite();
+                console.log(r)
+            }).catch(e => {
+                console.log(e);
+            });
+    }
+
     return (
         isLoading
         ?
@@ -107,14 +143,23 @@ const AdvertisementView = () => {
                                 <Link to={'/profile'} id={"return"}><p className={"return-link"}>{sellerEmail}</p></Link>
                                 :
                                 <div style={{ display: 'flex' }}>
-                                    <Link to={'/categories'} id={"return"}><p className={"return-link"}>Categories</p></Link>
-                                    <Link to={'/advertisements/' + category} id={"return"}><p className={"return-link"}>{category}</p></Link>
+                                    <Link to={'/'} id={"return"}><p className={"return-link"}>Categories</p></Link>
+                                    {category !== 'undefined' && <Link to={'/advertisements/' + category} id={"return"}><p className={"return-link"}>{category}</p></Link>}
                                 </div>
                             }
                             <p>Details</p>
                         </div>
                     </div>
                     <div className={styles.advertisement}>
+                        <div>
+                            {isAuth && (
+                                isAlreadyFavorite ? (
+                                    <button style={{backgroundColor: "#ff5328"}} onClick={handleDeleteFromFavorite}>Remove from favorite</button>
+                                ) : (
+                                    <button style={{backgroundColor: "#DD9901"}} onClick={handleAddFavorite}>Save to favorite</button>
+                                )
+                            )}
+                        </div>
                         {(isAdmin() || (advertisement.seller && advertisement.seller.id === userDetails.id)) &&
                             <div className={styles.adminButtons}>
                                 <Link to={'/advertisements/' + category + '/' + id + '/edit'}><button><p>Edit</p></button></Link>

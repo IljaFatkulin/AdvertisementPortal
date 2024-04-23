@@ -8,16 +8,31 @@ export default class AccountService {
         });
     }
 
-    static test() {
-        return myAxios.post('/product_view/create', {
-            productId: "test",
-        });
-    }
-
     static authenticate(user) {
         return myAxios.post('/accounts/authenticate', {
             email: user.email,
             password: user.password
+        });
+    }
+
+    static isFavorite(userDetails, productId) {
+        const authAxios = addAuthHeader(userDetails);
+        return authAxios.get(`/accounts/isfavorite/${userDetails.id}/${productId}`);
+    }
+
+    static addFavorite(userDetails, productId) {
+        const authAxios = addAuthHeader(userDetails);
+        return authAxios.post('/accounts/favorite', {
+            email: userDetails.email,
+            productId: productId
+        });
+    }
+
+    static deleteFavorite(userDetails, productId) {
+        const authAxios = addAuthHeader(userDetails);
+        return authAxios.post('/accounts/deletefavorite', {
+            email: userDetails.email,
+            productId: productId
         });
     }
 

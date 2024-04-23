@@ -114,7 +114,7 @@ const Advertisements = () => {
                         <Navbar/>
                         <h1>{category}</h1>
                         <div className={"return"}>
-                            <Link to={'/categories'} id={"return"}><p className={"return-link"}>Categories</p></Link>
+                            <Link to={'/'} id={"return"}><p className={"return-link"}>Categories</p></Link>
                             <p>{category}</p>
                         </div>
                     </div>

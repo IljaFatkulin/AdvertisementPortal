@@ -4,11 +4,16 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import iljafatkulin.advertisement.portal.exception.AccountNotFoundException;
 import iljafatkulin.advertisement.portal.exception.EmailAlreadyTaken;
 import iljafatkulin.advertisement.portal.model.Account;
+import iljafatkulin.advertisement.portal.model.Favorite;
+import iljafatkulin.advertisement.portal.model.Product;
+import iljafatkulin.advertisement.portal.repositories.AccountRepository;
+import iljafatkulin.advertisement.portal.repositories.FavoriteRepository;
 import iljafatkulin.advertisement.portal.request.LoginRequest;
+import iljafatkulin.advertisement.portal.request.SaveFavoriteRequest;
 import iljafatkulin.advertisement.portal.security.JWTUtil;
 import iljafatkulin.advertisement.portal.service.AccountService;
 import iljafatkulin.advertisement.portal.service.EmailService;
-import iljafatkulin.advertisement.portal.service.impl.AccountServiceImpl;
+import iljafatkulin.advertisement.portal.service.ProductsService;
 import iljafatkulin.advertisement.portal.util.ResourceUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,8 +23,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/accounts")
@@ -27,6 +31,9 @@ import java.util.Map;
 public class AccountResource {
     private final AccountService accountService;
     private final EmailService emailService;
+    private final AccountRepository accountRepository;
+    private final FavoriteRepository favoriteRepository;
+    private final ProductsService productsService;
 
     private final JWTUtil jwtUtil;
 
@@ -46,6 +53,67 @@ public class AccountResource {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
 
+    }
+
+    @GetMapping("/isfavorite/{userId}/{productId}")
+    public ResponseEntity<?> isFavorite(@PathVariable("userId") Long userId,
+                                        @PathVariable("productId") Integer productId)
+    {
+        try {
+            Optional<Favorite> favorite = favoriteRepository.findByProductIdAndAccountId(productId, userId);
+
+            if(favorite.isEmpty()) {
+                return ResponseEntity.ok("false");
+            }
+
+            return ResponseEntity.ok("true");
+        } catch (RuntimeException e) {
+            String errorMessage = e.getMessage();
+            HttpStatus status = HttpStatus.UNAUTHORIZED; // 401
+
+            return new ResponseEntity<>(errorMessage, status);
+        }
+    }
+
+    @PostMapping("/deletefavorite")
+    public ResponseEntity<?> removeFavorite(@RequestBody SaveFavoriteRequest saveFavoriteRequest) {
+        try {
+            if(accountRepository.findByEmail(saveFavoriteRequest.getEmail()).isEmpty()) {
+                return new ResponseEntity<>("Account not found", HttpStatus.NOT_FOUND);
+            }
+            Account account = accountRepository.findByEmail(saveFavoriteRequest.getEmail()).get();
+
+            Optional<Favorite> favorite = favoriteRepository.findByProductIdAndAccountId(saveFavoriteRequest.getProductId(), account.getId());
+
+            favorite.ifPresent(favoriteRepository::delete);
+
+            return ResponseEntity.ok("deleted");
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/favorite")
+    public ResponseEntity<?> saveFavorite(@RequestBody SaveFavoriteRequest saveFavoriteRequest) {
+        try {
+            if(accountRepository.findByEmail(saveFavoriteRequest.getEmail()).isEmpty()) {
+                return new ResponseEntity<>("Account not found", HttpStatus.NOT_FOUND);
+            }
+            Account account = accountRepository.findByEmail(saveFavoriteRequest.getEmail()).get();
+
+            Optional<Favorite> favorite = favoriteRepository.findByProductIdAndAccountId(saveFavoriteRequest.getProductId(), account.getId());
+
+            if (favorite.isPresent()) {
+                return ResponseEntity.ok("saved");
+            }
+
+            Favorite newFavorite = new Favorite(null, saveFavoriteRequest.getProductId(), account.getId());
+            favoriteRepository.save(newFavorite);
+
+            return ResponseEntity.ok("saved");
+        } catch (EmailAlreadyTaken e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping("/authenticate")

@@ -12,10 +12,11 @@ const Navbar = () => {
                 <p>Ads Marketplace</p>
             </div>
             <div className={styles.navbarMain}>
-                <Link to={'/'} className={styles.link}>Home</Link>
+                {/* <Link to={'/'} className={styles.link}>Home</Link> */}
+                <Link to={'/'} className={styles.link}>Categories</Link>
                 <Link className={styles.link}>About us</Link>
-                <Link to={'/categories'} className={styles.link}>Categories</Link>
-                <Link to={'/categories/choose'} className={styles.link}>Create advertisement</Link>
+                {isAuth && <Link to={'/favorite'} className={styles.link}>Favorite</Link>}
+                <Link to={'/choose'} className={styles.link}>Create advertisement</Link>
             </div>
             <div className={styles.navbarRight}>
                 {isAuth
@@ -23,7 +24,6 @@ const Navbar = () => {
                     <div>
                         <Link to={'/profile'}><button>Profile</button></Link>
                         <Link to={'/logout'}><button>Log out</button></Link>
-                        {/*<button onClick={logout}>Log out</button>*/}
                     </div>
                 :
                     <Link to={'/register'}><button>Sign Up</button></Link>

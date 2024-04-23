@@ -7,10 +7,8 @@ import iljafatkulin.advertisement.portal.dto.AttributeValueDTO;
 import iljafatkulin.advertisement.portal.dto.ProductDTO;
 import iljafatkulin.advertisement.portal.dto.ProductDetailsDTO;
 import iljafatkulin.advertisement.portal.dto.EditedImageDTO;
-import iljafatkulin.advertisement.portal.model.Attribute;
-import iljafatkulin.advertisement.portal.model.Category;
-import iljafatkulin.advertisement.portal.model.Product;
-import iljafatkulin.advertisement.portal.model.ProductImage;
+import iljafatkulin.advertisement.portal.model.*;
+import iljafatkulin.advertisement.portal.repositories.FavoriteRepository;
 import iljafatkulin.advertisement.portal.request.FormCreateProduct;
 import iljafatkulin.advertisement.portal.request.FormEditProduct;
 import iljafatkulin.advertisement.portal.service.AttributesService;
@@ -50,6 +48,7 @@ public class ProductResource {
     private final ProductsService productsService;
     private final CategoriesService categoriesService;
     private final AttributesService attributesService;
+    private final FavoriteRepository favoriteRepository;
 
     private final ObjectMapper objectMapper;
     private final Validator validator;
@@ -124,6 +123,34 @@ public class ProductResource {
         }
 
         return productDTOList;
+    }
+
+    @GetMapping("/favoriteproducts/{userId}")
+    public List<ProductDTO> getFavoriteProducts(@PathVariable("userId") Long userId)
+    {
+        try {
+            List<Favorite> favorites = favoriteRepository.findByAccountId(userId);
+
+            List<Product> products = new ArrayList<>();
+
+            for(Favorite fav : favorites) {
+                Product product = productsService.findById(fav.getProductId());
+                products.add(product);
+            }
+
+            List<ProductDTO> productDTOList = ObjectConverter.convertList(products, ProductDTO.class);
+
+            for(int i = 0; i < products.size(); i++) {
+                String path = products.get(i).getAvatarPath();
+                if(path != null) {
+                    productDTOList.get(i).setAvatar(getImage(path));
+                }
+            }
+
+            return productDTOList;
+        } catch (RuntimeException | IOException e) {
+            return new ArrayList<>();
+        }
     }
 
     @GetMapping("/user/{email}")
