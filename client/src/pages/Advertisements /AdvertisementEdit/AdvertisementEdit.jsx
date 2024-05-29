@@ -6,9 +6,13 @@ import Navbar from "../../../components/Navbar/Navbar";
 import styles from '../AdvertisementCreate/AdvertisementCreate.module.css';
 import {UserDetailsContext} from "../../../context/UserDetails";
 import ImageConverter from "../../../components/ImageConverter/ImageConverter";
+import { useTranslation } from 'react-i18next';
+import translate from '../../../util/translate';
 
 const AdvertisementEdit = () => {
+    const { t } = useTranslation();
     const {userDetails} = useContext(UserDetailsContext);
+    const lang = localStorage.getItem('language');
 
     const [isLoading, setIsLoading] = useState(true);
     const [product, setProduct] = useState();
@@ -24,14 +28,34 @@ const AdvertisementEdit = () => {
 
     useEffect(() => {
         AdvertisementService.getById(id)
-            .then(response => {
-                let attrs = [];
-                response.attributes.forEach(attribute => {
-                    attrs = [...attrs, {id: attrs.length, value: attribute.value, attribute: {name: attribute.attribute.name}}];
-                });
-                setAttributes(attrs);
+            .then(async response => {
+                if (lang.lang !== 'en') {
+                    const promises = response.attributes.map(async (attribute, index) => {
+                        const translatedValue = await translate(attribute.value, lang);
+                        const translatedName = await translate(attribute.attribute.name, lang);
 
-                delete response.avatar
+                        return {
+                            id: index,
+                            value: translatedValue,
+                            value_original: attribute.value,
+                            attribute: {
+                                name: translatedName,
+                                name_original: attribute.attribute.name
+                            }
+                        };
+                    });
+
+                    const translatedAttrs = await Promise.all(promises);
+                    setAttributes(translatedAttrs);
+                } else {
+                    let attrs = [];
+                    response.attributes.forEach(attribute => {
+                        attrs = [...attrs, {id: attrs.length, value: attribute.value, attribute: {name: attribute.attribute.name}}];
+                    });
+                    setAttributes(attrs);
+                }
+
+                delete response.avatar;
 
                 // setImages(response.imagesBytes);
                 // console.log(response.imagesBytes)
@@ -72,16 +96,34 @@ const AdvertisementEdit = () => {
         });
     }
 
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault();
 
-        console.log(editedImages);
-        AdvertisementService.edit(product, attributes, id, editedImages, newImages, imagesToDelete, userDetails)
+        const promises = attributes.map(async attribute => {
+            const attributeValue = attribute.value === attribute.value_original ? attribute.value : await translate(attribute.value, 'en');
+
+            console.log(attribute)
+
+            return {
+                ...attribute,
+                value: attributeValue,
+                attribute: {
+                    ...attribute.attribute,
+                    name: await translate(attribute.attribute.name, 'en'),
+                },
+            }
+        });
+
+        const updatedAttributes = lang !== 'en' ? await Promise.all(promises) : attributes;
+        console.log(updatedAttributes)
+        AdvertisementService.edit(product, updatedAttributes, id, editedImages, newImages, imagesToDelete, userDetails)
             .then(response => {
                 if(response.data === 'OK') {
                     navigate('/advertisements/' + category + '/' + id);
                 }
-            });
+            }).catch(err => {
+                console.log(err)
+            })
     }
 
     const handleAttributeChange = (e, index) => {
@@ -93,6 +135,8 @@ const AdvertisementEdit = () => {
             } else if(name === "value") {
                 updatedAttributes[index] = { ...updatedAttributes[index], value: value };
             }
+
+            console.log({updatedAttributes})
 
             return updatedAttributes;
         });
@@ -145,38 +189,38 @@ const AdvertisementEdit = () => {
         <div className={"container"}>
             <div className={"header"}>
                 <Navbar/>
-                <h1>Edit</h1>
+                <h1>{t('Edit')}</h1>
                 <div className={"return"}>
-                    <Link to={'/'} id={"return"}><p className={"return-link"}>Categories</p></Link>
+                    <Link to={'/'} id={"return"}><p className={"return-link"}>{t('Categories')}</p></Link>
                     <Link to={'/advertisements/' + category} id={"return"}><p className={"return-link"}>{category}</p></Link>
-                    <Link to={'/advertisements/' + category + '/' + id} id={"return"}><p className={"return-link"}>Details</p></Link>
-                    <p>Edit</p>
+                    <Link to={'/advertisements/' + category + '/' + id} id={"return"}><p className={"return-link"}>{t('Details')}</p></Link>
+                    <p>{t('Edit')}</p>
                 </div>
             </div>
             <div className={styles.formCreate}>
                 <form>
-                    <p>Name: </p>
+                    <p>{t('Name')}: </p>
                     <input
                         type="text"
                         value={product.name}
                         onChange={e => setProduct({...product, name: e.target.value})}
                     />
 
-                    <p>Price: </p>
+                    <p>{t('Price')}: </p>
                     <input
                         type="number"
                         value={product.price}
                         onChange={e => setProduct({...product, price: e.target.value})}
                     />
 
-                    <p>Description: </p>
+                    <p>{t('Description')}: </p>
                     <input
                         type="text"
                         value={product.description}
                         onChange={e => setProduct({...product, description: e.target.value})}
                     />
 
-                    <p>Avatar:</p>
+                    <p>{t('Avatar')}:</p>
                     <input
                         type="file"
                         name="avatar"
@@ -189,9 +233,9 @@ const AdvertisementEdit = () => {
                             ?
                             attributes.map((attribute, index) => (
                                 <div key={attribute.id}>
-                                    <p>Attribute:</p>
+                                    <p>{t('Attribute')}:</p>
                                     <input
-                                        placeholder="Name"
+                                        placeholder={t('Name')}
                                         type="text"
                                         name="name"
                                         value={attribute.attribute.name}
@@ -199,14 +243,14 @@ const AdvertisementEdit = () => {
                                     />
 
                                     <input
-                                        placeholder="Value"
+                                        placeholder={t('Value')}
                                         type="text"
                                         name="value"
                                         value={attribute.value}
                                         onChange={(e) => handleAttributeChange(e, index)}
                                     />
 
-                                    <button onClick={() => removeAttribute(index)}>Remove</button>
+                                    <button onClick={() => removeAttribute(index)}>{t('Remove')}</button>
                                 </div>
                             ))
                             :
@@ -242,7 +286,7 @@ const AdvertisementEdit = () => {
                     </div>
 
                     <div>
-                        <p>Images:</p>
+                        <p>{t('Images')}:</p>
                         {newImages.length > 0 &&
                             newImages.map(image =>
                                 <input
@@ -254,12 +298,12 @@ const AdvertisementEdit = () => {
                                 />
                             )
                         }
-                        <button onClick={handleAddImage}>Add image</button>
+                        <button onClick={handleAddImage}>{t('Add image')}</button>
                     </div>
 
                     <div className={styles.buttons}>
-                        <button onClick={addAttribute}>Add attribute</button>
-                        <button onClick={handleSubmit} className={styles.save}>Save</button>
+                        <button onClick={addAttribute}>{t('Add attribute')}</button>
+                        <button onClick={handleSubmit} className={styles.save}>{t('Save')}</button>
                     </div>
                 </form>
             </div>

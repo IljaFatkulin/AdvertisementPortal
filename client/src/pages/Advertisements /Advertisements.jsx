@@ -11,6 +11,9 @@ import CategoryService from "../../api/CategoryService";
 import Pagination from "../../components/Pagination/Pagination";
 import AdvertisementFilters from "../../components/AdvertisementFilters/AdvertisementFilters";
 import AdvertisementSearch from "../../components/AdvertisementSearch/AdvertisementSearch";
+import { useTranslation } from 'react-i18next';
+import translate from '../../util/translate';
+import CategoryStats from '../../components/ProfileStats/CategoryStats';
 
 const ViewType = {
     CARD: 'card',
@@ -21,11 +24,15 @@ const Advertisements = () => {
     const [viewType, setViewType] = useState(ViewType.CARD);
     const [filters, setFilters] = useState([]);
     const [sort, setSort] = useState('');
+    const { t } = useTranslation();
+    const [isStatsOpen, setIsStatsOpen] = useState(false);
 
-    const {isAuth} = useAuth();
+    const {isAuth, isAdmin} = useAuth();
 
     const [error, setError] = useState();
     const {category} = useParams();
+    const [categoryName, setCategoryName] = useState('');
+    const lang = localStorage.getItem('language') || 'en';
     const [isLoading, setIsLoading] = useState(true);
     const [advertisements, setAdvertisements] = useState([]);
 
@@ -42,9 +49,20 @@ const Advertisements = () => {
     }
 
     useEffect(() => {
+        translate(category, lang).then(res => setCategoryName(res));
+
         CategoryService.getCategoryAttributes(category)
-            .then(response => {
-                const updatedAttributes = response.map(attribute => ({ ...attribute, value: '' }));
+            .then(async response => {
+                const updatedAttributes = await Promise.all(response.map(async attribute => ({
+                    ...attribute,
+                    label: await translate(attribute.name, lang),
+                    value: '',
+                    options: await Promise.all(attribute.options.map(async option => ({
+                        value: option,
+                        label: await translate(option, lang)
+                    })))
+                })));
+                console.log(updatedAttributes)
 
                 setFilters(updatedAttributes);
             });
@@ -98,6 +116,14 @@ const Advertisements = () => {
         fetchAdvertisements();
     }
 
+    const openStats = () => {
+        setIsStatsOpen(true);
+    }
+
+    const closeStats = () => {
+        setIsStatsOpen(false);
+    }
+
     const [isFiltersVisible, setIsFiltersVisible] = useState(false);
 
     return (
@@ -110,12 +136,13 @@ const Advertisements = () => {
                 <NotFound error={error}/>
             :
                 <div className={"container"}>
+                    <CategoryStats isOpen={isStatsOpen} closeModal={closeStats} category={category} />
                     <div className={"header"}>
                         <Navbar/>
-                        <h1>{category}</h1>
+                        <h1>{categoryName}</h1>
                         <div className={"return"}>
-                            <Link to={'/'} id={"return"}><p className={"return-link"}>Categories</p></Link>
-                            <p>{category}</p>
+                            <Link to={'/'} id={"return"}><p className={"return-link"}>{t('Categories')}</p></Link>
+                            <p>{categoryName}</p>
                         </div>
                     </div>
 
@@ -129,7 +156,7 @@ const Advertisements = () => {
                             setSort={setSort}
                         />
 
-                        <button onClick={() => setIsFiltersVisible(!isFiltersVisible)} className={styles.filterButton}>Filters</button>
+                        <button onClick={() => setIsFiltersVisible(!isFiltersVisible)} className={styles.filterButton}>{t('Filters')}</button>
                         <AdvertisementFilters
                             setIsFiltersVisible={setIsFiltersVisible}
                             isFiltersVisible={isFiltersVisible}
@@ -140,9 +167,13 @@ const Advertisements = () => {
                     </div>
 
                     {isAuth &&
+                    <div style={{display: "flex", alignItems: "center", position: "relative"}}>
                         <Link to={'/advertisements/' + category + '/create'} className={"create"}>
-                            <button className={"button-create"}>Create</button>
+                            <button className={"button-create"}>{t('Create')}</button>
                         </Link>
+
+                        {isAdmin && <button onClick={openStats} style={{paddingInline: "20px", position: "absolute", right: "130px", top: "25px"}}>{t('Stats')}</button>}
+                    </div>
                     }
 
                     <div className={viewType === ViewType.CARD ? styles.products : styles.productsTable}>
@@ -157,7 +188,7 @@ const Advertisements = () => {
                                 />
                             )
                         :
-                            <p>Advertisements not found</p>
+                            <p>{t('Advertisements not found')}</p>
                         }
                     </div>
                     <Pagination

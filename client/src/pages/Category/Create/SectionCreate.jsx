@@ -4,8 +4,10 @@ import styles from '../../Advertisements /AdvertisementCreate/AdvertisementCreat
 import Navbar from "../../../components/Navbar/Navbar";
 import {Link, useNavigate} from "react-router-dom";
 import {UserDetailsContext} from "../../../context/UserDetails";
+import { useTranslation } from 'react-i18next';
 
 const SectionCreate = () => {
+    const { t } = useTranslation();
     const {userDetails} = useContext(UserDetailsContext);
 
     const [name, setName] = useState("");
@@ -33,10 +35,10 @@ const SectionCreate = () => {
         <div className={"container"}>
             <div className={"header"}>
                 <Navbar/>
-                <h1>Create section</h1>
+                <h1>{t('Create section')}</h1>
                 <div className={"return"}>
-                    <Link to={'/'} id={"return"}><p className={"return-link"}>Categories</p></Link>
-                    <p>Create section</p>
+                    <Link to={'/'} id={"return"}><p className={"return-link"}>{t('Categories')}</p></Link>
+                    <p>{t('Create section')}</p>
                 </div>
             </div>
             <div className={styles.formCreate}>
@@ -44,7 +46,7 @@ const SectionCreate = () => {
                 <div style={{color: "red"}}>
                     {error}
                 </div>
-                <p>Name:</p>
+                <p>{t('Name')}:</p>
                 <input
                     type="text"
                     value={name}
@@ -52,7 +54,7 @@ const SectionCreate = () => {
                 />
 
                 <div className={styles.buttons}>
-                    <button onClick={handleSubmit}>Create</button>
+                    <button onClick={handleSubmit}>{t('Create')}</button>
                 </div>
             </form>
             </div>

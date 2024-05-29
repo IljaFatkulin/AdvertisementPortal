@@ -16,4 +16,20 @@ export default class ProductViewService {
     static getAuthorizedViews(productId) {
         return myAxios.get('/product_view/' + productId + '/true');
     }
+
+    static getProfileStats(userId) {
+        return myAxios.get('/product_view/user/' + userId);
+    }
+
+    static getFavoriteCount(productId) {
+        return myAxios.get(`/product_view/${productId}/favorite`);
+    }
+
+    static getCategoryStats(category) {
+        return myAxios.get(`/product_view/category/${category}`);
+    }
+
+    static getSectionStats(section) {
+        return myAxios.get(`/product_view/section/${section}`);
+    }
 }

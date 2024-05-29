@@ -5,8 +5,10 @@ import Validator from "../../util/Validator";
 import AccountService from "../../api/AccountService";
 import {useCookies} from "react-cookie";
 import {UserDetailsContext} from "../../context/UserDetails";
+import { useTranslation } from 'react-i18next';
 
 const SignUp = () => {
+    const { t } = useTranslation();
     const [cookies, setCookies] = useCookies(['token']);
     const {setUserDetails, setIsAuth} = useContext(UserDetailsContext);
     const navigate = useNavigate();
@@ -51,15 +53,15 @@ const SignUp = () => {
     const validate = () => {
         let hasErrors = false;
         if(!Validator.validateEmail(form.email)) {
-            setErrors([...errors, "Invalid email"]);
+            setErrors([...errors, t("Invalid email")]);
             hasErrors = true;
         }
         if(form.password !== form.confirmPassword) {
-            setErrors([...errors, "Password mismatch"]);
+            setErrors([...errors, t("Password mismatch")]);
             hasErrors = true;
         }
         if(form.password.length < 1) {
-            setErrors([...errors, "Password is required"]);
+            setErrors([...errors, t("Password is required")]);
             hasErrors = true;
         }
         return hasErrors;
@@ -67,34 +69,34 @@ const SignUp = () => {
 
     return (
         <div className={styles.container}>
-            <Link to={"/"}><button style={{width: "150px"}} className={styles.formSignUp_button}>Home</button></Link>
+            <Link to={"/"}><button style={{width: "150px"}} className={styles.formSignUp_button}>{t('Home')}</button></Link>
             <form className={styles.formSignUp}>
                 <div>
                     {errors.map(error =>
                         <p key={error} style={{color: "red"}}>{error}</p>
                     )}
                 </div>
-                <p>Email: </p>
+                <p>{t('Email')}: </p>
                 <input
                     type="text"
                     value={form.email}
                     onChange={e => setForm({...form, email: e.target.value})}
                 />
-                <p>Password:</p>
+                <p>{t('Password')}:</p>
                 <input
                     type="password"
                     value={form.password}
                     onChange={e => setForm({...form, password: e.target.value})}
                 />
-                <p>Confirm password:</p>
+                <p>{t('Confirm password')}:</p>
                 <input
                     type="password"
                     value={form.confirmPassword}
                     onChange={e => setForm({...form, confirmPassword: e.target.value})}
                 />
-                <button onClick={handleSubmit} className={styles.formSignUp_button}>Sign Up</button>
-                <div className={styles.separator}>OR</div>
-                <Link to={'/login'}><button className={styles.formSignUp_button}>Sign In</button></Link>
+                <button onClick={handleSubmit} className={styles.formSignUp_button}>{t('Sign Up')}</button>
+                <div className={styles.separator}>{t('OR')}</div>
+                <Link to={'/login'}><button className={styles.formSignUp_button}>{t('Sign In')}</button></Link>
             </form>
         </div>
     );

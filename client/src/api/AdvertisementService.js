@@ -94,9 +94,18 @@ export default class AdvertisementService {
             formData.append('avatar', product.avatar);
             delete product.avatar;
         }
+        // attributes = attributes.map(attribute => {
+        //     return {
+        //         value: attribute.value,
+        //         attribute: attribute.attribute
+        //     };
+        // })
         formData.append('product', JSON.stringify(product));
         formData.append('attributes', JSON.stringify(attributes));
         formData.append('id', id);
+
+        console.log(JSON.stringify(attributes))
+        console.log(attributes)
 
         images.forEach(image => {
             formData.append('images', image.image);
@@ -118,6 +127,7 @@ export default class AdvertisementService {
         // });
 
         const authAxios = addAuthHeader(userDetails);
+        console.log(formData)
         return authAxios.post('/products/edit', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',

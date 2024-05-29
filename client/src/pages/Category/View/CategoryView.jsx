@@ -6,8 +6,10 @@ import NotFound from "../../NotFound/NotFound";
 import {UserDetailsContext} from "../../../context/UserDetails";
 import Navbar from "../../../components/Navbar/Navbar";
 import styles from "./CategoryView.module.css";
+import { useTranslation } from 'react-i18next';
 
 const CategoryView = () => {
+    const { t } = useTranslation();
     const {userDetails} = useContext(UserDetailsContext);
 
     const {id} = useParams();
@@ -88,34 +90,34 @@ const CategoryView = () => {
                 <div className={"container"}>
                     <div className={"header"}>
                         <Navbar/>
-                        <h1>Create</h1>
+                        <h1>{t('Create')}</h1>
                         <div className={"return"}>
-                            <Link to={'/'} id={"return"}><p className={"return-link"}>Categories</p></Link>
-                            <p>View</p>
+                            <Link to={'/'} id={"return"}><p className={"return-link"}>{t('Categories')}</p></Link>
+                            <p>{t('View')}</p>
                         </div>
                     </div>
                     <div className={styles.content}>
-                        {category.name !== 'Without category' && <button onClick={handleDeleteCategory}>Delete</button>}
+                        {category.name !== 'Without category' && <button onClick={handleDeleteCategory}>{t('Delete')}</button>}
                         {error && <p style={{color: "red"}}>{error}</p>}
-                        <p>Name:
+                        <p>{t('Name')}:
                             <input
                                 type="text"
                                 value={category.name}
                                 onChange={e => setCategory({...category, name: e.target.value})}
                             />
-                            {category.name !== 'Without category' && <button onClick={handleRename}>Rename</button>}
+                            {category.name !== 'Without category' && <button onClick={handleRename}>{t('Rename')}</button>}
                         </p>
-                        <p>Attributes:</p>
+                        <p>{t('Attributes')}:</p>
                         {category.attributes.length
                         ?
                             category.attributes.map(attribute =>
                                 <div key={attribute.id} className={styles.attribute}>
                                     <p>{attribute.name}</p>
-                                    <button onClick={() => removeAttribute(attribute.id)}>Remove</button>
+                                    <button onClick={() => removeAttribute(attribute.id)}>{t('Remove')}</button>
                                 </div>
                             )
                         :
-                            <p>No attributes</p>
+                            <p>{t('No attributes')}</p>
                         }
                         <form>
                             <input
@@ -125,7 +127,7 @@ const CategoryView = () => {
                                 onChange={e => setAttributeName(e.target.value)}
                             />
 
-                            <button onClick={addAttribute}>Add</button>
+                            <button onClick={addAttribute}>{t('Add')}</button>
                         </form>
                     </div>
                 </div>

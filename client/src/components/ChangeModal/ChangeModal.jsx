@@ -1,8 +1,10 @@
 import React, {useState} from 'react';
 import Modal from 'react-modal';
 import styles from './ChangeModal.module.css';
+import { useTranslation } from 'react-i18next';
 
 const ChangeModal = ({isOpen, closeModal, secondInputTitle, action}) => {
+    const { t } = useTranslation();
     const [password, setPassword] = useState('');
     const [secondInputValue, setSecondInputValue] = useState('');
 
@@ -19,18 +21,18 @@ const ChangeModal = ({isOpen, closeModal, secondInputTitle, action}) => {
             ariaHideApp={false}
             isOpen={isOpen}
             onRequestClose={closeModal}
-            contentLabel="Change"
+            contentLabel={t('Change')}
 
         >
             <p>Enter password:</p>
             <input
                 type="text"
-                placeholder="Password"
+                placeholder={t('Password')}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
             />
 
-            <p>Enter {secondInputTitle.toLowerCase()}:</p>
+            <p>{t('Enter')} {secondInputTitle.toLowerCase()}:</p>
             <input
                 type="text"
                 placeholder={secondInputTitle}
@@ -38,7 +40,7 @@ const ChangeModal = ({isOpen, closeModal, secondInputTitle, action}) => {
                 onChange={(e) => setSecondInputValue(e.target.value)}
             />
 
-            <button onClick={handleSubmit}>Change</button>
+            <button onClick={handleSubmit}>{t('Change')}</button>
         </Modal>
     );
 };

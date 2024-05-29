@@ -1,6 +1,5 @@
 import React, {useContext, useEffect, useState} from 'react';
 import Loader from "../../components/Loader/Loader";
-// import NotFound from "../NotFound/NotFound";
 import Navbar from "../../components/Navbar/Navbar";
 import {UserDetailsContext} from "../../context/UserDetails";
 import styles from './Profile.module.css';
@@ -11,8 +10,11 @@ import AdvertisementService from "../../api/AdvertisementService";
 import AdvertisementCard from "../../components/AdvertisementCard/AdvertisementCard";
 import ChangePasswordModal from "../../components/Modals/ChangePasswordModal/ChangePasswordModal";
 import useAuth from "../../hooks/useAuth";
+import { useTranslation } from 'react-i18next';
+import ProfileStats from '../../components/ProfileStats/ProfileStats';
 
 const Profile = () => {
+    const { t } = useTranslation();
     const {email} = useParams();
 
     const navigate = useNavigate();
@@ -23,6 +25,7 @@ const Profile = () => {
     const [currentProfileEmail, setCurrentProfileEmail] = useState(email ? email : userDetails.email);
 
     const [advertisements, setAdvertisements] = useState([]);
+    const [isStatsOpen, setIsStatsOpen] = useState(false);
 
     useEffect(() => {
         AdvertisementService.getUserAdvertisements(currentProfileEmail)
@@ -31,38 +34,29 @@ const Profile = () => {
             });
     }, []);
 
-    // For modal to change password
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
     const [secondInputTitle, setSecondInputTitle] = useState('');
     const [action, setAction] = useState(undefined);
 
-    // const openModal = (title, act) => {
-    //     setSecondInputTitle(title);
-    //     setIsModalOpen(true);
-    //     setAction(() => act);
-    // };
-
     const openPasswordModal = () => {
         setIsPasswordModalOpen(true);
+    }
+
+    const openStats = () => {
+        setIsStatsOpen(true);
     }
 
     const closePasswordModal = () => {
         setIsPasswordModalOpen(false);
     }
 
-    // const changeEmail = (password, newEmail) => {
-    //     AccountService.changeEmail(password, newEmail, userDetails)
-    //         .then(response => {
-    //             console.log(response.data);
-    //             navigate('/logout');
-    //         }).catch(error => {
-    //             console.error(error);
-    //     })
-    // }
-
     const closeModal = () => {
         setIsModalOpen(false);
+    };
+
+    const closeStats = () => {
+        setIsStatsOpen(false);
     };
 
     return (
@@ -77,25 +71,27 @@ const Profile = () => {
                 <div className={"container"}>
                     <div className={"header"}>
                         <Navbar/>
-                        <h1>Profile</h1>
+                        <h1>{t('Profile')}</h1>
                     </div>
 
                     <div className={styles.content}>
                         <div className={styles.userDetails}>
                             <div>
-                                <p>Email: {currentProfileEmail}</p>
-                                {/*{!email &&*/}
-                                {/*    <button onClick={() => openModal('Email', changeEmail)} className={styles.change}>Change</button>*/}
-                                {/*}*/}
+                                <p>{t('Email')}: {currentProfileEmail}</p>
                             </div>
                             {!email &&
-                                <div>
-                                    {/*<p>Password: ●●●●●</p><button onClick={() => openModal('New password', changePassword)} className={styles.change}>Change</button>*/}
-                                    <p>Password: ●●●●●</p><button onClick={openPasswordModal} className={styles.change}>Change</button>
-                                </div>
+                                <>
+                                    <div>
+                                        <p>{t('Password')}: ●●●●●</p><button onClick={openPasswordModal} className={styles.change}>{t('Change')}</button>
+                                    </div>
+                                    <div>
+                                        <button onClick={openStats}>{t('Profile Stats')}</button>
+                                    </div>
+                                </>
                             }
                             <ChangeModal isOpen={isModalOpen} closeModal={closeModal} secondInputTitle={secondInputTitle} action={action}/>
                             <ChangePasswordModal isOpen={isPasswordModalOpen} closeModal={closePasswordModal}/>
+                            <ProfileStats isOpen={isStatsOpen} closeModal={closeStats} />
                         </div>
                         <div className={styles.advertisements}>
                             {advertisements.length
@@ -111,7 +107,7 @@ const Profile = () => {
                                     />
                                 )
                                 :
-                                <p>Advertisements not found</p>
+                                <p>{t('Advertisements not found')}</p>
                             }
                         </div>
                     </div>

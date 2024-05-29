@@ -6,6 +6,7 @@ import {useEffect, useState} from "react";
 import {UserDetailsContext} from "./context/UserDetails";
 import AccountService from "./api/AccountService";
 import Loader from "./components/Loader/Loader";
+import { useTranslation } from "react-i18next";
 
 function App() {
     const [userDetails, setUserDetails] = useState({
@@ -16,8 +17,12 @@ function App() {
     });
     const [isAuth, setIsAuth] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const { i18n, t } = useTranslation();
 
     useEffect(() => {
+        const lang = localStorage.getItem("language");
+        i18n.changeLanguage(lang || "en");
+
         setTimeout(() => {
             console.log(window.userUniqueId);
         }, 500);

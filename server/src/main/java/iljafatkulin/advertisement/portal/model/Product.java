@@ -67,6 +67,9 @@ public class Product {
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private List<ProductImage> images;
 
+    @Column (name = "user_count_saved")
+    private Integer userCountSaved;
+
     public Product(String name, double price, String description) {
         this.name = name;
         this.price = price;

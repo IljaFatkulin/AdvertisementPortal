@@ -1,13 +1,18 @@
 package iljafatkulin.advertisement.portal.resource;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
+
+import iljafatkulin.advertisement.portal.dto.AccountUpdateDTO;
 import iljafatkulin.advertisement.portal.exception.AccountNotFoundException;
 import iljafatkulin.advertisement.portal.exception.EmailAlreadyTaken;
 import iljafatkulin.advertisement.portal.model.Account;
 import iljafatkulin.advertisement.portal.model.Favorite;
 import iljafatkulin.advertisement.portal.model.Product;
+import iljafatkulin.advertisement.portal.model.Role;
 import iljafatkulin.advertisement.portal.repositories.AccountRepository;
 import iljafatkulin.advertisement.portal.repositories.FavoriteRepository;
+import iljafatkulin.advertisement.portal.repositories.ProductsRepository;
+import iljafatkulin.advertisement.portal.repositories.RoleRepository;
 import iljafatkulin.advertisement.portal.request.LoginRequest;
 import iljafatkulin.advertisement.portal.request.SaveFavoriteRequest;
 import iljafatkulin.advertisement.portal.security.JWTUtil;
@@ -34,6 +39,8 @@ public class AccountResource {
     private final AccountRepository accountRepository;
     private final FavoriteRepository favoriteRepository;
     private final ProductsService productsService;
+    private final ProductsRepository productsRepository;
+    private final RoleRepository roleRepository;
 
     private final JWTUtil jwtUtil;
 
@@ -53,6 +60,39 @@ public class AccountResource {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
 
+    }
+
+    @PostMapping("/update")
+    public ResponseEntity<?> updateAccount(@RequestBody AccountUpdateDTO accountUpdateDTO) {
+        Optional<Account> accountOptional = accountRepository.findById((long) accountUpdateDTO.getId());
+
+        if (accountOptional.isEmpty()) {
+            return new ResponseEntity<>("Account not found", HttpStatus.NOT_FOUND);
+        }
+
+        System.out.println(accountUpdateDTO.getRole());
+        System.out.println(accountUpdateDTO.getBanned());
+        Account account = accountOptional.get();
+        if (accountUpdateDTO.getRole() != null) {
+            Role role = roleRepository.findByName("ROLE_" + accountUpdateDTO.getRole());
+            account.setRoles(new HashSet<Role>(List.of(role)));
+        }
+        if (accountUpdateDTO.getBanned() != null) {
+            if (accountUpdateDTO.getBanned().equals("Yes")) {
+                System.out.println("LOCKEED");
+                account.setLocked(true);
+            } else if (accountUpdateDTO.getBanned().equals("No")) {
+                account.setLocked(false);
+            }
+        }
+        accountRepository.save(account);
+        return ResponseEntity.ok(account);
+    }
+
+    @GetMapping("/getAll")
+    public ResponseEntity<?> getAllAccounts() {
+        List<Account> accounts = accountRepository.findAll();
+        return ResponseEntity.ok(accounts);
     }
 
     @GetMapping("/isfavorite/{userId}/{productId}")
@@ -85,6 +125,10 @@ public class AccountResource {
 
             Optional<Favorite> favorite = favoriteRepository.findByProductIdAndAccountId(saveFavoriteRequest.getProductId(), account.getId());
 
+            Product product = productsService.findById(saveFavoriteRequest.getProductId());
+            product.setUserCountSaved(product.getUserCountSaved() != null ? product.getUserCountSaved() - 1 : 0);
+            productsRepository.save(product);
+
             favorite.ifPresent(favoriteRepository::delete);
 
             return ResponseEntity.ok("deleted");
@@ -102,6 +146,10 @@ public class AccountResource {
             Account account = accountRepository.findByEmail(saveFavoriteRequest.getEmail()).get();
 
             Optional<Favorite> favorite = favoriteRepository.findByProductIdAndAccountId(saveFavoriteRequest.getProductId(), account.getId());
+
+            Product product = productsService.findById(saveFavoriteRequest.getProductId());
+            product.setUserCountSaved(product.getUserCountSaved() != null ? product.getUserCountSaved() + 1 : 1);
+            productsRepository.save(product);
 
             if (favorite.isPresent()) {
                 return ResponseEntity.ok("saved");
@@ -205,4 +253,5 @@ public class AccountResource {
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
+
 }

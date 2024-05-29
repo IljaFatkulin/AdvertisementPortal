@@ -7,6 +7,7 @@ import {useContext} from "react";
 import AdvertisementService from "../../api/AdvertisementService";
 import styles from './Favorite.module.css';
 import AdvertisementCard from "../../components/AdvertisementCard/AdvertisementCard";
+import { useTranslation } from 'react-i18next';
 
 const ViewType = {
     CARD: 'card',
@@ -14,6 +15,7 @@ const ViewType = {
 };
 
 const Favorite = () => {
+    const { t } = useTranslation();
     const [advertisements, setAdvertisements] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const {userDetails} = useContext(UserDetailsContext);
@@ -39,10 +41,10 @@ const Favorite = () => {
             <div className={"container"}>
                 <div className={"header"}>
                     <Navbar/>
-                    <h1>Favorite</h1>
+                    <h1>{t('Favorite')}</h1>
                     <div className={"return"}>
-                        <Link to={'/'} id={"return"}><p className={"return-link"}>Categories</p></Link>
-                        <p>Favorite</p>
+                        <Link to={'/'} id={"return"}><p className={"return-link"}>{t('Categories')}</p></Link>
+                        <p>{t('Favorite')}</p>
                     </div>
                 </div>
 
@@ -57,7 +59,7 @@ const Favorite = () => {
                             />
                         )
                     :
-                        <p>Advertisements not found</p>
+                        <p>{t('Advertisements not found')}</p>
                     }
                 </div>
             </div>

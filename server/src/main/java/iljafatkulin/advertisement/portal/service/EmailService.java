@@ -12,7 +12,7 @@ public class EmailService {
 
     public void sendMessage(String to, String subject, String content) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("adsmarketplace@outlook.com");
+        message.setFrom("adsmarketplace@inbox.lv");
         message.setTo(to);
         message.setSubject(subject);
         message.setText(content);
@@ -21,7 +21,7 @@ public class EmailService {
 
     public void sendWelcomeMessage(String to) {
         String userFirstName = "User";
-        String supportEmail = "adsmarketplace@outlook.com";
+        String supportEmail = "adsmarketplace@inbox.lv";
 
         String emailSubject = "Welcome to Ads Marketplace!";
         String emailMessage = "Dear " + userFirstName + ",\n\n" +

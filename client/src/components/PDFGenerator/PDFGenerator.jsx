@@ -8,17 +8,31 @@ import Modal from "react-modal";
 import Loader from '../Loader/Loader';
 import styles2 from './../Modals/ChangePasswordModal/ChangePasswordModal.module.css';
 import styles from './../ImageModal/ImageModal.module.css';
-
+import { useTranslation } from 'react-i18next';
+import PDFStats from '../PDFStats/PDFStats';
+import { pdf } from '@react-pdf/renderer';
+import { saveAs } from 'file-saver';
+import translate from '../../util/translate';
 
 const PDFGenerator = ({isOpen, closeModal}) => {
+    const { t } = useTranslation();
     const {category, id} = useParams();
     const [advertisement, setAdvertisement] = useState({});
     const [views, setViews] = useState(0);
     const [authViews, setAuthViews] = useState(0);
+    const [favoriteCount, setFavoriteCount] = useState(0);
 
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
+        ProductViewService.getFavoriteCount(id)
+            .then(r => {
+                setFavoriteCount(r.data);
+                console.log(r.data);
+            }).catch(e => {
+                console.log(e);
+            });
+
         ProductViewService.getAllViews(id)
             .then(r => {
                 setViews(r.data);
@@ -47,15 +61,13 @@ const PDFGenerator = ({isOpen, closeModal}) => {
             })
             .catch(e => {
                 console.log(e.response.data);
-            })
+            });
     }, []);
 
-    const generatePDF = () => {
-    const doc = new jsPDF();
-    doc.text('Advertisement details', 10, 10);
-    doc.autoTable({ html: '#my-table' });
-
-    doc.save('details.pdf');
+    const generatePDF = async () => {
+        const translatedDescription = await translate(advertisement.description, localStorage.getItem('language'));
+        const blob = await pdf(<PDFStats favoriteCount={favoriteCount} name={advertisement.name} price={advertisement.price} description={translatedDescription} seller={advertisement.seller.email} createdAt={new Date(advertisement.createdAt).toLocaleDateString()} totalViews={views} authorized={authViews} guest={views - authViews} />).toBlob();
+        saveAs(blob, 'document.pdf');
     };
 
     const handleBackgroundClick = e => {
@@ -86,44 +98,48 @@ const PDFGenerator = ({isOpen, closeModal}) => {
     <div className={styles2.changeModal}>
         {/* <Link to={`/advertisements/${category}/${id}`}><button>Back</button></Link> */}
         {/* <br /> */}
-        <button style={{height: '80px', background: "#DD9901"}} onClick={closeModal}>Close</button>
+        <button style={{height: '80px', background: "#DD9901"}} onClick={closeModal}>{t('Close')}</button>
         <table id="my-table">
         <tbody>
             <tr>
-                <td>Name</td>
+                <td>{t('Name')}</td>
                 <td>{advertisement.name}</td>
             </tr>
             <tr>
-                <td>Price</td>
+                <td>{t('Price')}</td>
                 <td>€{advertisement.price}</td>
             </tr>
             <tr>
-                <td>Description</td>
+                <td>{t('Description')}</td>
                 <td>{advertisement.description}</td>
             </tr>
             <tr>
-                <td>Seller</td>
+                <td>{t('Seller')}</td>
                 <td>{advertisement.seller.email}</td>
             </tr>
             <tr>
-                <td>Created at</td>
+                <td>{t('Created at')}</td>
                 <td>{new Date(advertisement.createdAt).toLocaleDateString()}</td>
             </tr>
             <tr>
-                <td>Total views:</td>
+                <td>{t('Total views')}:</td>
                 <td>{views}</td>
             </tr>
             <tr>
-                <td>Authorized users views:</td>
+                <td>{t('Authorized users views')}:</td>
                 <td>{authViews}</td>
             </tr>
             <tr>
-                <td>Guests views:</td>
+                <td>{t('Guests views')}:</td>
                 <td>{views - authViews}</td>
+            </tr>
+            <tr>
+                <td>{t('Users count saved ads to favorite')}:</td>
+                <td>{favoriteCount}</td>
             </tr>
         </tbody>
         </table>
-        <button style={{height: '80px'}} onClick={generatePDF}>Download PDF</button>
+        <button style={{height: '80px'}} onClick={generatePDF}>{t('Download PDF')}</button>
 
     </div>
     {/* </Modal> */}

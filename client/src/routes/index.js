@@ -5,7 +5,6 @@ import AdvertisementCreate from "../pages/Advertisements /AdvertisementCreate/Ad
 import SectionCreate from "../pages/Category/Create/SectionCreate";
 import AdvertisementEdit from "../pages/Advertisements /AdvertisementEdit/AdvertisementEdit";
 import NotFound from "../pages/NotFound/NotFound";
-import Home from "../pages/Home/Home";
 import Categories from "../pages/Category/Categories";
 import SignUp from "../pages/Authorization/SignUp";
 import Favorite from "../pages/Favorite/Favorite";
@@ -14,9 +13,9 @@ import Profile from "../pages/Profile/Profile";
 import Logout from "../components/Logout";
 import SectionView from "../pages/Category/View/SectionView";
 import PDFGenerator from "../components/PDFGenerator/PDFGenerator";
+import PDF from "../pages/PDF/PDF";
 
 export const commonRoutes = [
-    // {path: '/', element: <Home/>},
     {path: '/statistics/:category/:id', element: <PDFGenerator/>},
     {path: '/', element: <Categories/>},
 
@@ -44,6 +43,7 @@ export const userRoutes = [
     {path: '/profile/:email?', element: <Profile/>},
     {path: '/favorite', element: <Favorite/>},
     {path: '/logout', element: <Logout/>},
+    {path: '/pdf', element: <PDF/>},
 ];
 
 export const adminRoutes = [

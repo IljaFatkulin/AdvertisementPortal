@@ -5,8 +5,10 @@ import AccountService from "../../../api/AccountService";
 import {useNavigate} from "react-router-dom";
 import {UserDetailsContext} from "../../../context/UserDetails";
 import Loader from "../../Loader/Loader";
+import { useTranslation } from 'react-i18next';
 
 const ChangePasswordModal = ({isOpen, closeModal}) => {
+    const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState(false);
 
     const {userDetails} = useContext(UserDetailsContext);
@@ -30,7 +32,7 @@ const ChangePasswordModal = ({isOpen, closeModal}) => {
                 }
             }).catch(error => {
                 if(error.response.status === 401) {
-                    setErrors([...errors, "Incorrect code"]);
+                    setErrors([...errors, t('Incorrect code')]);
                 }
             }).finally(() => {
                 setIsLoading(false);
@@ -47,7 +49,7 @@ const ChangePasswordModal = ({isOpen, closeModal}) => {
                 }
             }).catch(error => {
                 if(error.response.status === 401) {
-                    setErrors([...errors, "Incorrect old password"]);
+                    setErrors([...errors, t('Incorrect old password')]);
                 }
             }).finally(() => {
                 setIsLoading(false);
@@ -60,7 +62,7 @@ const ChangePasswordModal = ({isOpen, closeModal}) => {
             ariaHideApp={false}
             isOpen={isOpen}
             onRequestClose={closeModal}
-            contentLabel="Change"
+            contentLabel={t('Change')}
 
         >
             {isLoading
@@ -78,32 +80,32 @@ const ChangePasswordModal = ({isOpen, closeModal}) => {
                         <div style={{display: "flex", flexDirection: "column"}}>
                             <input
                                 type="text"
-                                placeholder="Code"
+                                placeholder={t('Code')}
                                 value={code}
                                 onChange={(e) => setCode(e.target.value)}
                             />
 
-                            <button onClick={changePasswordSubmit}>Submit</button>
+                            <button onClick={changePasswordSubmit}>{t('Submit')}</button>
                         </div>
                         :
                         <div style={{display: "flex", flexDirection: "column"}}>
-                            <p>Enter old password:</p>
+                            <p>{t('Enter old password')}:</p>
                             <input
                                 type="text"
-                                placeholder="Old password"
+                                placeholder={t('Old password')}
                                 value={oldPassword}
                                 onChange={(e) => setOldPassword(e.target.value)}
                             />
 
-                            <p>Enter new password:</p>
+                            <p>{t('Enter new password')}:</p>
                             <input
                                 type="text"
-                                placeholder="New password"
+                                placeholder={t('New password')}
                                 value={newPassword}
                                 onChange={(e) => setNewPassword(e.target.value)}
                             />
 
-                            <button onClick={changePassword}>Change</button>
+                            <button onClick={changePassword}>{t('Change')}</button>
                         </div>
                     }
                 </div>

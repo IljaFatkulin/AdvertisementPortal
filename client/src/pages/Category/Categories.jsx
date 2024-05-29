@@ -6,8 +6,11 @@ import styles from "./Categories.module.css";
 import Navbar from "../../components/Navbar/Navbar";
 import useAuth from "../../hooks/useAuth";
 import {UserDetailsContext} from "../../context/UserDetails";
+import { useTranslation } from 'react-i18next';
+import translate from '../../util/translate';
 
 const Categories = ({create}) => {
+    const { t } = useTranslation();
     const {userDetails} = useContext(UserDetailsContext);
 
     const { isAdmin } = useAuth();
@@ -19,14 +22,24 @@ const Categories = ({create}) => {
     const navigate = useNavigate();
 
     const fetchSections = () => {
+        const lang = localStorage.getItem('language') || 'en';
         CategoryService.getSections()
-            .then(response => {
-                const updatedSections = response.map(section => ({
+            .then(async response => {
+                console.log(response)
+                const updatedSections = await Promise.all(response.map(async section => ({
                     ...section,
+                    name: await translate(section.name, lang),
+                    value: section.name,
+                    categories: await Promise.all(section.categories.map(async category => ({
+                        ...category,
+                        name: await translate(category.name, lang),
+                        value: category.name
+                    }))),
                     addCategoryVisible: false,
                     newCategory: '',
-                    newCategoryError: ''
-                }));
+                    newCategoryError: '',
+                })));
+                console.log(updatedSections)
                 setSections(updatedSections);
                 setIsLoading(false);
             })
@@ -90,11 +103,11 @@ const Categories = ({create}) => {
             <div className={"container"}>
                 <div className={"header"}>
                     <Navbar/>
-                    <h1>{create ? 'Choose category' : 'Categories'}</h1>
+                    <h1>{create ? t('Choose category') : t('Categories')}</h1>
                 </div>
                 {isAdmin() && !create &&
                     <Link to={'/create'} className={"create"}>
-                        <button className={"button-create"}>Create</button>
+                        <button className={"button-create"}>{t('Create')}</button>
                     </Link>
                 }
                 <div className={styles.content}>
@@ -107,7 +120,7 @@ const Categories = ({create}) => {
                                 {section.categories.length > 0 && section.categories.map(category =>
                                     <div className={styles.category} key={category.id}>
                                         <li key={category.id}>
-                                            <Link className={styles.link} to={`/advertisements/${category.name}${create ? '/create' : ''}`}>{category.name}</Link>
+                                            <Link className={styles.link} to={`/advertisements/${category.value}${create ? '/create' : ''}`}>{category.name}</Link>
                                             {isAdmin() && !create && <img className={styles.settings} src="img/settings.png" onClick={() => viewCategory(category.id)} alt={""}></img>}
                                         </li>
                                     </div>
@@ -125,16 +138,16 @@ const Categories = ({create}) => {
                                             value={section.newCategory}
                                             onChange={e => onCategoryChange(e, section.id)}
                                         />
-                                        <button onClick={() => handleCreateCategory(section.id)} style={{height:"20px", fontSize: "14px"}}>create</button>
+                                        <button onClick={() => handleCreateCategory(section.id)} style={{height:"20px", fontSize: "14px"}}>{t('Create')}</button>
                                     </li>
-                                    <li><button onClick={() => handleAddCategory(section.id)} style={{height:"20px", fontSize: "14px"}}>add</button></li>
+                                    <li><button onClick={() => handleAddCategory(section.id)} style={{height:"20px", fontSize: "14px"}}>{t('Add')}</button></li>
                                     </div>
                                 }
                                 </ul>
                             </div>
                         )
                     :
-                        <p>Categories not found</p>
+                        <p>{t('Categories not found')}</p>
                     }
                 </div>
             </div>

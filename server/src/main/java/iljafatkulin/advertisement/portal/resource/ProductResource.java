@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.data.domain.Sort;
 
+import java.io.Console;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -216,13 +217,15 @@ public class ProductResource {
         // Converting json to DTObjects
         ProductDTO productDTO = objectMapper.readValue(productString, ProductDTO.class);
         List<AttributeValueDTO> attributeValueDTOList = objectMapper.readValue(attributesString, new TypeReference<>() {});
+        System.out.println(attributesString);
 
         // Input validation
         FormEditProduct form = new FormEditProduct();
         form.setId(id);
-        form.setProduct(productDTO);form.setAttributes(attributeValueDTOList);
-        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(form, "form");
-        validator.validate(form, bindingResult);
+        form.setProduct(productDTO);
+        form.setAttributes(attributeValueDTOList);
+        // BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(form, "form");
+        // validator.validate(form, bindingResult);
 
         // Fetching product to edit from db
         Product productToEdit = productsService.findById(id);
@@ -230,9 +233,9 @@ public class ProductResource {
         if(productToEdit == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        if(bindingResult.hasErrors()) {
-            return FormUtil.generateResponseEntityWithErrorsBadRequest(bindingResult);
-        }
+        // if(bindingResult.hasErrors()) {
+        //     return FormUtil.generateResponseEntityWithErrorsBadRequest(bindingResult);
+        // }
 
         Product product = ObjectConverter.convert(form.getProduct(), Product.class);
 
@@ -326,7 +329,10 @@ public class ProductResource {
         if(attributeValueDTOList != null) {
             for (AttributeValueDTO attributeValueDTO : attributeValueDTOList) {
                 Attribute attribute = attributesService.findByName(attributeValueDTO.getAttribute().getName());
-                if (attribute == null) attribute = new Attribute(attributeValueDTO.getAttribute().getName());
+                if (attribute == null) {
+                    attribute = new Attribute(attributeValueDTO.getAttribute().getName());
+                    attributesService.save(attribute);
+                }
 
                 productToEdit.addAttribute(attribute, attributeValueDTO.getValue());
             }

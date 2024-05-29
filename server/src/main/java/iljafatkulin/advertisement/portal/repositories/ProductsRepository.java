@@ -19,9 +19,13 @@ public interface ProductsRepository extends JpaRepository<Product, Integer> {
 
     Page<Product> findByCategoryId(int categoryId, Pageable pageable);
 
+    List<Product> findByCategoryId(int categoryId);
+
     long countByCategoryName(String categoryName);
 
     List<Product> findBySellerEmail(String email);
+
+    List<Product> findBySellerId(Long id);
 
 //    List<Product> findByStartingNameAndPriceRangeIgnoreCase(String name, Double minPrice, Double maxPrice, Category category, Sort sort);
 //    List<Product> findByCategoryAndNameStartingWithIgnoreCaseAndPriceBetween(Category category, String name, Double minPrice, Double maxPrice, Sort sort);

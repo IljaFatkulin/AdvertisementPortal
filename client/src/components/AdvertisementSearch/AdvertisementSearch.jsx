@@ -1,8 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import AdvertisementService from "../../api/AdvertisementService";
 import styles from './AdvertisementSearch.module.css';
+import { useTranslation } from 'react-i18next';
 
 const AdvertisementSearch = ({setAdvertisements, category, setPages, onFilterClear, setViewType, setSort}) => {
+    const { t } = useTranslation();
     const [form, setForm] = useState({
         name: '',
         min: '',
@@ -36,7 +38,7 @@ const AdvertisementSearch = ({setAdvertisements, category, setPages, onFilterCle
     return (
         <div className={styles.search}>
             <div>
-                <p>Name</p>
+                <p>{t('Name')}</p>
                 <input
                     className={styles.searchName}
                     type="text"
@@ -45,7 +47,7 @@ const AdvertisementSearch = ({setAdvertisements, category, setPages, onFilterCle
                 />
             </div>
             <div>
-                <p>Price</p>
+                <p>{t('Price')}</p>
                 <input
                     className={styles.searchPrice}
                     placeholder="Min"
@@ -63,22 +65,22 @@ const AdvertisementSearch = ({setAdvertisements, category, setPages, onFilterCle
                 />
             </div>
 
-            <button onClick={handleSubmit}>Search</button>
-            <button onClick={filterClear}>Clear</button>
+            <button onClick={handleSubmit}>{t('Search')}</button>
+            <button onClick={filterClear}>{t('Clear')}</button>
             <select className={styles.selectView} onChange={(e) => setViewType(e.target.value)}>
-                <option value="card" disabled selected>View Type</option>
-                <option value="table">Table</option>
-                <option value="card">Card</option>
+                <option value="card" disabled selected>{t('View Type')}</option>
+                <option value="table">{t('Table')}</option>
+                <option value="card">{t('Card')}</option>
             </select>
 
             <select className={styles.selectView} onChange={(e) => setSort(e.target.value)}>
-                <option value="" disabled selected>Sort</option>
-                <option value="createdAt_asc">Newest</option>
-                <option value="createdAt_desc">Oldest</option>
-                <option value="price_desc">Price high to low</option>
-                <option value="price_asc">Price low to high</option>
-                <option value="name_asc">Name ascending</option>
-                <option value="name_desc">Name descending</option>
+                <option value="" disabled selected>{t('Sort')}</option>
+                <option value="createdAt_asc">{t('Newest')}</option>
+                <option value="createdAt_desc">{t('Oldest')}</option>
+                <option value="price_desc">{t('Price high to low')}</option>
+                <option value="price_asc">{t('Price low to high')}</option>
+                <option value="name_asc">{t('Name ascending')}</option>
+                <option value="name_desc">{t('Name descending')}</option>
             </select>
         </div>
     );

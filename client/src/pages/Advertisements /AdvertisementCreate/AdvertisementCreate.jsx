@@ -6,9 +6,13 @@ import styles from './AdvertisementCreate.module.css';
 import {UserDetailsContext} from "../../../context/UserDetails";
 import Loader from "../../../components/Loader/Loader";
 import CategoryService from "../../../api/CategoryService";
+import { useTranslation } from 'react-i18next';
+import translate from '../../../util/translate';
 
 const AdvertisementCreate = () => {
+    const { t } = useTranslation();
     const {userDetails} = useContext(UserDetailsContext);
+    const lang = localStorage.getItem('language');
 
     const [isLoading, setIsLoading] = useState(true);
 
@@ -26,15 +30,37 @@ const AdvertisementCreate = () => {
 
     useEffect(() => {
         CategoryService.getCategoryAttributes(category)
-            .then(response => {
-                setAttributes(response.map(attribute => ({
-                    id: attribute.id,
-                    attribute: {
-                        name: attribute.name,
-                    },
-                    value: ''
-                })));
-                setIsLoading(false);
+            .then(async response => {
+                if (lang.lang !== 'en') {
+                    console.log(response)
+                    const promises = response.map(async attribute => {
+                        const translatedName = await translate(attribute.name, lang);
+
+                        return {
+                            id: attribute.id,
+                            value: '',
+                            attribute: {
+                                name: translatedName,
+                                name_original: attribute.name
+                            }
+                        };
+                    });
+
+                    const translatedAttrs = await Promise.all(promises);
+                    setIsLoading(false);
+
+                    console.log(translatedAttrs);
+                    setAttributes(translatedAttrs);
+                } else {
+                    setAttributes(response.map(attribute => ({
+                        id: attribute.id,
+                        attribute: {
+                            name: attribute.name,
+                        },
+                        value: ''
+                    })));
+                    setIsLoading(false);
+                }
             })
     }, []);
 
@@ -124,11 +150,11 @@ const AdvertisementCreate = () => {
         <div className={"container"}>
             <div className={"header"}>
                 <Navbar/>
-                <h1>Create</h1>
+                <h1>{t('Create')}</h1>
                 <div className={"return"}>
-                    <Link to={'/'} id={"return"}><p className={"return-link"}>Categories</p></Link>
+                    <Link to={'/'} id={"return"}><p className={"return-link"}>{t('Categories')}</p></Link>
                     <Link to={'/advertisements/' + category} id={"return"}><p className={"return-link"}>{category}</p></Link>
-                    <p>Create</p>
+                    <p>{t('Create')}</p>
                 </div>
             </div>
             <div className={styles.formCreate}>
@@ -138,28 +164,28 @@ const AdvertisementCreate = () => {
                     )}
                 </div>
                 <form encType={"multipart/form-data"}>
-                    <p>Name: </p>
+                    <p>{t('Name')}: </p>
                     <input
                         type="text"
                         value={product.name}
                         onChange={e => setProduct({...product, name: e.target.value})}
                     />
 
-                    <p>Price: </p>
+                    <p>{t('Price')}: </p>
                     <input
                         type="number"
                         value={product.price}
                         onChange={e => setProduct({...product, price: e.target.value})}
                     />
 
-                    <p>Description: </p>
+                    <p>{t('Description')}: </p>
                     <input
                         type="text"
                         value={product.description}
                         onChange={e => setProduct({...product, description: e.target.value})}
                     />
 
-                    <p>Avatar:</p>
+                    <p>{t('Avatar')}:</p>
                     <input
                         type="file"
                         name="avatar"
@@ -172,7 +198,7 @@ const AdvertisementCreate = () => {
                         ?
                             attributes.map((attribute, index) => (
                                 <div key={attribute.id}>
-                                    <p>Attribute:</p>
+                                    <p>{t('Attribute')}:</p>
                                     <input
                                         placeholder="Name"
                                         type="text"
@@ -189,17 +215,17 @@ const AdvertisementCreate = () => {
                                         onChange={(e) => handleAttributeChange(e, index)}
                                     />
 
-                                    <button onClick={() => removeAttribute(index)}>Remove</button>
+                                    <button onClick={() => removeAttribute(index)}>{t('Remove')}</button>
                                 </div>
                             ))
                         :
                             <p></p>
                         }
-                        <button onClick={addAttribute}>Add attribute</button>
+                        <button onClick={addAttribute}>{t('Add attribute')}</button>
                     </div>
 
                     <div>
-                        <p>Images:</p>
+                        <p>{t('Images')}:</p>
                         {images.length > 0 &&
                             images.map(image =>
                                 <input
@@ -211,11 +237,11 @@ const AdvertisementCreate = () => {
                                 />
                             )
                         }
-                        <button onClick={handleAddImage}>Add image</button>
+                        <button onClick={handleAddImage}>{t('Add image')}</button>
                     </div>
 
                     <div className={styles.buttons}>
-                        <button onClick={handleSubmit}>Create</button>
+                        <button onClick={handleSubmit}>{t('Create')}</button>
                     </div>
 
 

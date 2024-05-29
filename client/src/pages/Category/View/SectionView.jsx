@@ -6,10 +6,14 @@ import Navbar from "../../../components/Navbar/Navbar";
 import {Link, useNavigate, useParams} from "react-router-dom";
 import {UserDetailsContext} from "../../../context/UserDetails";
 import CategoryService from "../../../api/CategoryService";
+import { useTranslation } from 'react-i18next';
+import SectionStats from '../../../components/ProfileStats/SectionStats';
 
 const SectionView = () => {
+    const { t } = useTranslation();
     const {userDetails} = useContext(UserDetailsContext);
     const {id} = useParams();
+    const [isStatsOpen, setIsStatsOpen] = useState(false);
 
     const [isLoading, setIsLoading] = useState(true);
     const [notFoundError, setNotFoundError] = useState();
@@ -62,6 +66,14 @@ const SectionView = () => {
         })
     }
 
+    const openStats = () => {
+        setIsStatsOpen(true);
+    }
+
+    const closeStats = () => {
+        setIsStatsOpen(false);
+    }
+
     return (
         isLoading
             ?
@@ -72,25 +84,29 @@ const SectionView = () => {
                 <NotFound error={notFoundError}/>
                 :
                 <div className={"container"}>
+                    <SectionStats isOpen={isStatsOpen} closeModal={closeStats} section={section.name} />
                     <div className={"header"}>
                         <Navbar/>
-                        <h1>Create</h1>
+                        <h1>{t('Create')}</h1>
                         <div className={"return"}>
-                            <Link to={'/'} id={"return"}><p className={"return-link"}>Categories</p></Link>
-                            <p>View</p>
+                            <Link to={'/'} id={"return"}><p className={"return-link"}>{t('Categories')}</p></Link>
+                            <p>{t('View')}</p>
                         </div>
                     </div>
                     <div className={styles.content}>
-                        {section.name !== 'Other' && <button onClick={handleDeleteSection}>Delete</button>}
+                        {section.name !== 'Other' && <button onClick={handleDeleteSection}>{t('Delete')}</button>}
                         {error && <p style={{color: "red"}}>{error}</p>}
-                        <p>Name:
+                        <p>{t('Name')}:
                             <input
                                 type="text"
                                 value={section.name}
                                 onChange={e => setSection({...section, name: e.target.value})}
                             />
-                            {section.name !== 'Other' && <button onClick={handleRename}>Rename</button>}
+                            {section.name !== 'Other' && <button onClick={handleRename}>{t('Rename')}</button>}
                         </p>
+                    </div>
+                    <div style={{display: "flex", justifyContent: "center"}}>
+                        <button onClick={openStats} style={{width: "150px"}}>{t('Stats')}</button>
                     </div>
                 </div>
     );

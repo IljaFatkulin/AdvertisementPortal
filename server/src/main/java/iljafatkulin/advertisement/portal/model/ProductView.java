@@ -7,6 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.Date;
+
 import org.hibernate.annotations.Cascade;
 
 @Getter
@@ -30,4 +33,7 @@ public class ProductView {
 
     @Column(name = "user_id")
     private String userId;
+
+    @Column(name = "created_at")
+    private Date createdAt = new Date();
 }

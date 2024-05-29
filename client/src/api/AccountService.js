@@ -15,9 +15,23 @@ export default class AccountService {
         });
     }
 
+    static updateUser(userDetails, userId, role, banned) {
+        const authAxios = addAuthHeader(userDetails);
+        return authAxios.post(`/accounts/update`, {
+            id: userId,
+            role: role,
+            banned: banned
+        });
+    }
+
     static isFavorite(userDetails, productId) {
         const authAxios = addAuthHeader(userDetails);
         return authAxios.get(`/accounts/isfavorite/${userDetails.id}/${productId}`);
+    }
+
+    static getAll(userDetails) {
+        const authAxios = addAuthHeader(userDetails);
+        return authAxios.get(`/accounts/getAll`);
     }
 
     static addFavorite(userDetails, productId) {

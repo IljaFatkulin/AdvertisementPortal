@@ -1,8 +1,10 @@
-import React     from 'react';  
+import React from 'react';
 import { Form, Button } from 'react-bootstrap';
 import styles from './AdvertisementFilters.module.css';
+import { useTranslation } from 'react-i18next';
 
 const AdvertisementFilters = ({ filters, setFilters, onFiltersChange, isFiltersVisible,setIsFiltersVisible }) => {
+    const { t } = useTranslation();
     const handleFilterValueChange = (name, value) => {
         const updatedFilters = filters.map(attribute => {
             if (attribute.name === name) {
@@ -34,26 +36,21 @@ const AdvertisementFilters = ({ filters, setFilters, onFiltersChange, isFiltersV
                 <div className={styles.filters} onClick={e => e.stopPropagation()}>
                     {filters.map(filter => (
                         <div key={filter.id}>
-                            <p>{filter.name}</p>
-                            {/* <input
-                                type="text"
-                                value={filter.value}
-                                onChange={e => handleFilterValueChange(filter.name, e.target.value)}
-                            /> */}
+                            <p>{filter.label}</p>
                             <select
                                 className={styles.FilterSelect}
                                 value={filter.value}
                                 onChange={e => handleFilterValueChange(filter.name, e.target.value)}
                             >
-                                <option value="">Select...</option>
+                                <option value="">{t('Select')}...</option>
                                 {filter.options.map(option => (
-                                    <option key={option} value={option}>{option}</option>
+                                    <option key={option.value} value={option.value}>{option.label}</option>
                                 ))}
                             </select>
                         </div>
                     ))}
-                    <button onClick={handleClose}>Filter</button>
-                    <button onClick={handleClearFilters}>Clear</button>
+                    <button onClick={handleClose}>{t('Filter')}</button>
+                    <button onClick={handleClearFilters}>{t('Clear')}</button>
                 </div>
             </div>
     );

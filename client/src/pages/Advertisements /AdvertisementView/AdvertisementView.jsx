@@ -12,9 +12,12 @@ import ImageModal from "../../../components/ImageModal/ImageModal";
 import ProductViewService from '../../../api/ProductViewService';
 import PDFGenerator from '../../../components/PDFGenerator/PDFGenerator';
 import AccountService from '../../../api/AccountService';
+import { useTranslation } from 'react-i18next';
+import translate from '../../../util/translate';
 
 const AdvertisementView = () => {
     // Get sellerId from url params
+    const { t } = useTranslation();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const sellerEmail = queryParams.get('seller');
@@ -44,6 +47,10 @@ const AdvertisementView = () => {
         }
     };
 
+    useEffect(() => {
+        translate('Hello, how are you?', 'fr');
+    }, [])
+
     const fetchIsFavorite = () => {
         AccountService.isFavorite(userDetails, id)
         .then(response => {
@@ -65,12 +72,28 @@ const AdvertisementView = () => {
             });
 
         AdvertisementService.getById(id)
-            .then(response => {
+            .then(async response => {
                 const ads = response;
                 ads.imagesBytes = response.imagesBytes.map(image => {
                     return {id: image.id, image: image.image};
                 });
+                console.log(ads)
 
+                const translateAttributeName = async (name) => {
+                    if (typeof name === 'string' && isNaN(name))
+                        return await translate(name, localStorage.getItem('language') || 'en');
+                    else
+                        return name;
+                };
+
+                const formattedAttributes = ads.attributes.map(async attribute => {
+                    return {
+                        attribute: { id: attribute.attribute.id, name: await translateAttributeName(attribute.attribute.name) },
+                        value: await translateAttributeName(attribute.value),
+                    };
+                });
+
+                ads.attributes = await Promise.all(formattedAttributes);
                 setAdvertisement(ads);
 
                 setIsLoading(false);
@@ -136,34 +159,34 @@ const AdvertisementView = () => {
                 <div className={"container"}>
                     <div className={"header"}>
                         <Navbar/>
-                        <h1>Details</h1>
+                        <h1>{t('Details')}</h1>
                         <div className={"return"}>
                             {sellerEmail
                                 ?
                                 <Link to={'/profile'} id={"return"}><p className={"return-link"}>{sellerEmail}</p></Link>
                                 :
                                 <div style={{ display: 'flex' }}>
-                                    <Link to={'/'} id={"return"}><p className={"return-link"}>Categories</p></Link>
+                                    <Link to={'/'} id={"return"}><p className={"return-link"}>{t('Categories')}</p></Link>
                                     {category !== 'undefined' && <Link to={'/advertisements/' + category} id={"return"}><p className={"return-link"}>{category}</p></Link>}
                                 </div>
                             }
-                            <p>Details</p>
+                            <p>{t('Details')}</p>
                         </div>
                     </div>
                     <div className={styles.advertisement}>
                         <div>
                             {isAuth && (
                                 isAlreadyFavorite ? (
-                                    <button style={{backgroundColor: "#ff5328"}} onClick={handleDeleteFromFavorite}>Remove from favorite</button>
+                                    <button style={{backgroundColor: "#ff5328"}} onClick={handleDeleteFromFavorite}>{t('Remove from favorite')}</button>
                                 ) : (
-                                    <button style={{backgroundColor: "#DD9901"}} onClick={handleAddFavorite}>Save to favorite</button>
+                                    <button style={{backgroundColor: "#DD9901"}} onClick={handleAddFavorite}>{t('Save to favorite')}</button>
                                 )
                             )}
                         </div>
                         {(isAdmin() || (advertisement.seller && advertisement.seller.id === userDetails.id)) &&
                             <div className={styles.adminButtons}>
-                                <Link to={'/advertisements/' + category + '/' + id + '/edit'}><button><p>Edit</p></button></Link>
-                                <button onClick={() => deleteAdvertisement(id)}><p>Delete</p></button>
+                                <Link to={'/advertisements/' + category + '/' + id + '/edit'}><button><p>{t('Edit')}</p></button></Link>
+                                <button onClick={() => deleteAdvertisement(id)}><p>{t('Delete')}</p></button>
                             </div>
                         }
                         <div className={styles.advertisementMain}>
@@ -172,18 +195,18 @@ const AdvertisementView = () => {
                                 ?
                                     <ImageConverter className={styles.advertisementImg} data={advertisement.avatar}/>
                                 :
-                                    <p>No image</p>
+                                    <p>{t('No image')}</p>
                                 }
                             </div>
                             <div className={styles.advertisementMainInfo}>
                                 <p className={"name"}>{advertisement.name}</p>
                                 <p className={"price"}>€{advertisement.price}</p>
                                 <p className={"description"}>{advertisement.description}</p>
-                                <p className={"seller"}>Seller: {advertisement.seller && <Link to={'/profile/' + advertisement.seller.email}>{advertisement.seller.email}</Link>}</p>
-                                <p>Posted at: {new Date(advertisement.createdAt).toLocaleDateString()}</p>
-                                {(sellerEmail === userDetails.email || isAdmin())&& <p>Views: {views}</p>}
+                                <p className={"seller"}>{t('Seller')}: {advertisement.seller && <Link to={'/profile/' + advertisement.seller.email}>{advertisement.seller.email}</Link>}</p>
+                                <p>{t('Posted at')}: {new Date(advertisement.createdAt).toLocaleDateString()}</p>
+                                {(sellerEmail === userDetails.email || isAdmin())&& <p>{t('Views')}: {views}</p>}
                                 {/* {(sellerEmail === userDetails.email || isAdmin())&& <Link to={'/statistics/' + category + '/' + id}>Open statistics</Link>} */}
-                                {(sellerEmail === userDetails.email || isAdmin())&& <button onClick={() => setIsDetailsOpen(true)}>Open statistics</button>}
+                                {(sellerEmail === userDetails.email || isAdmin())&& <button onClick={() => setIsDetailsOpen(true)}>{t('Open statistics')}</button>}
                             </div>
                         </div>
                         {advertisement.attributes.length
