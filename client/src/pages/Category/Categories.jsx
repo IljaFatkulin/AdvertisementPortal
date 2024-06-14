@@ -115,17 +115,16 @@ const Categories = ({create}) => {
                     ?
                         sections.map(section =>
                             <div className={styles.section} key={section.id}>
-                                <h2>{section.name}{isAdmin() && !create && <img className={styles.settings} src="img/settings.png" onClick={() => viewSection(section.id)} alt={""}></img>}</h2>
+                                <h2>{section.name} ({section.productCount}){isAdmin() && !create && <img className={styles.settings} src="img/settings.png" onClick={() => viewSection(section.id)} alt={""}></img>}</h2>
                                 <ul>
                                 {section.categories.length > 0 && section.categories.map(category =>
                                     <div className={styles.category} key={category.id}>
                                         <li key={category.id}>
-                                            <Link className={styles.link} to={`/advertisements/${category.value}${create ? '/create' : ''}`}>{category.name}</Link>
+                                            <Link className={styles.link} to={`/advertisements/${category.value}${create ? '/create' : ''}`}>{category.name} ({category.productCount})</Link>
                                             {isAdmin() && !create && <img className={styles.settings} src="img/settings.png" onClick={() => viewCategory(category.id)} alt={""}></img>}
                                         </li>
                                     </div>
-                                )
-                                }
+                                )}
                                 {isAdmin() &&
                                     <div>
                                     {section.newCategoryError &&

@@ -172,7 +172,7 @@ const Advertisements = () => {
                             <button className={"button-create"}>{t('Create')}</button>
                         </Link>
 
-                        {isAdmin && <button onClick={openStats} style={{paddingInline: "20px", position: "absolute", right: "130px", top: "25px"}}>{t('Stats')}</button>}
+                        {isAdmin() && <button onClick={openStats} style={{paddingInline: "20px", position: "absolute", right: "130px", top: "25px"}}>{t('Stats')}</button>}
                     </div>
                     }
 

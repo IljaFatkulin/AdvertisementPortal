@@ -91,7 +91,7 @@ const ChangePasswordModal = ({isOpen, closeModal}) => {
                         <div style={{display: "flex", flexDirection: "column"}}>
                             <p>{t('Enter old password')}:</p>
                             <input
-                                type="text"
+                                type="password"
                                 placeholder={t('Old password')}
                                 value={oldPassword}
                                 onChange={(e) => setOldPassword(e.target.value)}
@@ -99,7 +99,7 @@ const ChangePasswordModal = ({isOpen, closeModal}) => {
 
                             <p>{t('Enter new password')}:</p>
                             <input
-                                type="text"
+                                type="password"
                                 placeholder={t('New password')}
                                 value={newPassword}
                                 onChange={(e) => setNewPassword(e.target.value)}

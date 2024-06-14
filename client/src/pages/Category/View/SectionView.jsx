@@ -8,6 +8,7 @@ import {UserDetailsContext} from "../../../context/UserDetails";
 import CategoryService from "../../../api/CategoryService";
 import { useTranslation } from 'react-i18next';
 import SectionStats from '../../../components/ProfileStats/SectionStats';
+import translate from '../../../util/translate';
 
 const SectionView = () => {
     const { t } = useTranslation();
@@ -23,11 +24,16 @@ const SectionView = () => {
     const [error, setError] = useState('');
 
     const navigate = useNavigate();
+    const lang = localStorage.getItem('language') || 'en';
 
     useEffect(() => {
         setNotFoundError(null);
         CategoryService.findSectionById(id, userDetails)
-            .then(response => {
+            .then(async response => {
+                console.log(response)
+                if (lang !== 'en') {
+                    response.data.name = await translate(response.data.name, lang);
+                }
                 setSection(response.data);
             }).catch(error => {
                 if(error.response.status === 404) {
@@ -51,8 +57,13 @@ const SectionView = () => {
         )
     }
 
-    const handleRename = () => {
-        CategoryService.renameSection(id, section.name, userDetails)
+    const handleRename = async () => {
+        let name = section.name;
+        if (lang !== 'en') {
+            name = await translate(name, 'en');
+        }
+
+        CategoryService.renameSection(id, name, userDetails)
             .then(response => {
                 if(response.status === 200) {
                     navigate('/');
@@ -94,16 +105,15 @@ const SectionView = () => {
                         </div>
                     </div>
                     <div className={styles.content}>
-                        {section.name !== 'Other' && <button onClick={handleDeleteSection}>{t('Delete')}</button>}
+                        <button onClick={handleDeleteSection}>{t('Delete')}</button>
                         {error && <p style={{color: "red"}}>{error}</p>}
-                        <p>{t('Name')}:
-                            <input
-                                type="text"
-                                value={section.name}
-                                onChange={e => setSection({...section, name: e.target.value})}
-                            />
-                            {section.name !== 'Other' && <button onClick={handleRename}>{t('Rename')}</button>}
-                        </p>
+                        <p style={{marginBottom: "0", marginLeft: "-150px"}}>{t('Name')}</p>
+                        <input
+                            type="text"
+                            value={section.name}
+                            onChange={e => setSection({...section, name: e.target.value})}
+                        />
+                        <button onClick={handleRename}>{t('Rename')}</button>
                     </div>
                     <div style={{display: "flex", justifyContent: "center"}}>
                         <button onClick={openStats} style={{width: "150px"}}>{t('Stats')}</button>

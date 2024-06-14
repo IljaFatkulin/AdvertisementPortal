@@ -7,6 +7,7 @@ import {UserDetailsContext} from "../../../context/UserDetails";
 import Navbar from "../../../components/Navbar/Navbar";
 import styles from "./CategoryView.module.css";
 import { useTranslation } from 'react-i18next';
+import translate from '../../../util/translate';
 
 const CategoryView = () => {
     const { t } = useTranslation();
@@ -18,12 +19,25 @@ const CategoryView = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [category, setCategory] = useState({});
     const [attributeName, setAttributeName] = useState("");
+    const lang = localStorage.getItem('language') || 'en';
 
     function fetchCategoryInfo() {
         setIsLoading(true);
 
         CategoryService.getCategoryInfo(id)
-            .then(response => {
+            .then(async response => {
+                console.log(response);
+                if (lang !== 'en') {
+                    response.name = await translate(response.name, lang)
+                }
+                const promises = response.attributes.map(async attribute => {
+                    if (lang !== 'en') {
+                        attribute.name = await translate(attribute.name, lang)
+                    }
+                    return attribute;
+                })
+
+                response.attributes = await Promise.all(promises);
                 setCategory(response);
             })
             .catch(e => {
@@ -44,10 +58,15 @@ const CategoryView = () => {
             });
     }
 
-    const addAttribute = (e) => {
+    const addAttribute = async (e) => {
         e.preventDefault();
 
-        CategoryService.addAttribute(id, attributeName, userDetails)
+        let name = attributeName;
+        if (lang !== 'en') {
+            name = await translate(name, 'en')
+        }
+
+        CategoryService.addAttribute(id, name, userDetails)
             .then(() => {
                 fetchCategoryInfo();
             });
@@ -64,8 +83,13 @@ const CategoryView = () => {
 
     const [error, setError] = useState('');
 
-    const handleRename = () => {
-        CategoryService.renameCategory(id, category.name, userDetails)
+    const handleRename = async () => {
+        let name = category.name;
+        if (lang !== 'en') {
+            name = await translate(name, 'en');
+        }
+
+        CategoryService.renameCategory(id, name, userDetails)
             .then(response => {
                 console.log(response.data);
                 if(response.status === 200) {
@@ -99,15 +123,14 @@ const CategoryView = () => {
                     <div className={styles.content}>
                         {category.name !== 'Without category' && <button onClick={handleDeleteCategory}>{t('Delete')}</button>}
                         {error && <p style={{color: "red"}}>{error}</p>}
-                        <p>{t('Name')}:
-                            <input
-                                type="text"
-                                value={category.name}
-                                onChange={e => setCategory({...category, name: e.target.value})}
-                            />
-                            {category.name !== 'Without category' && <button onClick={handleRename}>{t('Rename')}</button>}
-                        </p>
-                        <p>{t('Attributes')}:</p>
+                        <p style={{marginBottom: "0", marginLeft: "-150px"}}>{t('Name')}</p>
+                        <input
+                            type="text"
+                            value={category.name}
+                            onChange={e => setCategory({...category, name: e.target.value})}
+                        />
+                        {category.name !== 'Without category' && <button onClick={handleRename}>{t('Rename')}</button>}
+                        <p style={{fontSize: 24, marginTop: "50px"}}>{t('Attributes')}:</p>
                         {category.attributes.length
                         ?
                             category.attributes.map(attribute =>
@@ -121,7 +144,7 @@ const CategoryView = () => {
                         }
                         <form>
                             <input
-                                placeholder="Attribute name"
+                                placeholder={t("Attribute name")}
                                 type="text"
                                 value={attributeName}
                                 onChange={e => setAttributeName(e.target.value)}

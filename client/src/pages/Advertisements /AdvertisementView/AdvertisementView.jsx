@@ -14,6 +14,9 @@ import PDFGenerator from '../../../components/PDFGenerator/PDFGenerator';
 import AccountService from '../../../api/AccountService';
 import { useTranslation } from 'react-i18next';
 import translate from '../../../util/translate';
+import AdsPDF from '../../../components/AdsPDF/AdsPDF';
+import { pdf } from '@react-pdf/renderer';
+import { saveAs } from 'file-saver';
 
 const AdvertisementView = () => {
     // Get sellerId from url params
@@ -147,6 +150,30 @@ const AdvertisementView = () => {
             });
     }
 
+    const generatePDF = async () => {
+        const translatedDescription = await translate(advertisement.description, localStorage.getItem('language'));
+        const translatedAttributes = await Promise.all(advertisement.attributes.map(async attribute => {
+            return {
+                attribute: {
+                    id: attribute.attribute.id,
+                    name: await translate(attribute.attribute.name, localStorage.getItem('language'))
+                },
+                value: await translate(attribute.value, localStorage.getItem('language'))
+            };
+        }));
+
+        const images = await Promise.all(advertisement.imagesBytes.map(async image => {
+            return await fetch(`data:image/jpeg;base64,${image.image}`)
+                .then(res => res.blob());
+        }));
+        if (advertisement.avatar) {
+            images.unshift(await fetch(`data:image/jpeg;base64,${advertisement.avatar}`)
+                .then(res => res.blob()));
+        }
+        const blob = await pdf(<AdsPDF id={advertisement.id} name={advertisement.name} price={advertisement.price} description={translatedDescription} seller={advertisement.seller.email} createdAt={new Date(advertisement.createdAt).toLocaleDateString()} attributes={translatedAttributes} images={images} />).toBlob();
+        saveAs(blob, `${(advertisement.name).replace(" ", "_")}_stats.pdf`);
+    };
+
     return (
         isLoading
         ?
@@ -199,14 +226,16 @@ const AdvertisementView = () => {
                                 }
                             </div>
                             <div className={styles.advertisementMainInfo}>
-                                <p className={"name"}>{advertisement.name}</p>
-                                <p className={"price"}>€{advertisement.price}</p>
-                                <p className={"description"}>{advertisement.description}</p>
+                                <p>{t('Advertisement number')}: {advertisement.id}</p>
+                                <p className={"name"}>{t('Name')}: {advertisement.name}</p>
+                                <p className={"price"}>{t('Price')}: €{advertisement.price}</p>
+                                <p className={"description"}>{t('Description')}: {advertisement.description}</p>
                                 <p className={"seller"}>{t('Seller')}: {advertisement.seller && <Link to={'/profile/' + advertisement.seller.email}>{advertisement.seller.email}</Link>}</p>
-                                <p>{t('Posted at')}: {new Date(advertisement.createdAt).toLocaleDateString()}</p>
-                                {(sellerEmail === userDetails.email || isAdmin())&& <p>{t('Views')}: {views}</p>}
-                                {/* {(sellerEmail === userDetails.email || isAdmin())&& <Link to={'/statistics/' + category + '/' + id}>Open statistics</Link>} */}
-                                {(sellerEmail === userDetails.email || isAdmin())&& <button onClick={() => setIsDetailsOpen(true)}>{t('Open statistics')}</button>}
+                                <p>{t('Posted at')}: {new Date(advertisement.createdAt).toISOString().split('T')[0]}</p>
+                                {(isAdmin() || (advertisement.seller && advertisement.seller.id === userDetails.id)) && <p>{t('Views')}: {views}</p>}
+                                {(isAdmin() || (advertisement.seller && advertisement.seller.id === userDetails.id)) && <button onClick={() => setIsDetailsOpen(true)}>{t('Open statistics')}</button>}
+                                <br />
+                                {(isAdmin() || (advertisement.seller && advertisement.seller.id === userDetails.id)) && <button onClick={generatePDF}>{t('Download PDF')}</button>}
                             </div>
                         </div>
                         {advertisement.attributes.length

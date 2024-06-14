@@ -27,7 +27,6 @@ public class AccountAuthenticationProvider extends AbstractUserDetailsAuthentica
     }
 
     @Override
-    // Username = email
     protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
         return userDetailsService.loadUserByUsername(username);
     }

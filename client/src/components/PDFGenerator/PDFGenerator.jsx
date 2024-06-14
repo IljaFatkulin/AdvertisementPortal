@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import {Link, useLocation, useNavigate, useParams} from "react-router-dom";
-import jsPDF from 'jspdf';
+import {useParams} from "react-router-dom";
 import ProductViewService from '../../api/ProductViewService';
 import AdvertisementService from "../../api/AdvertisementService";
 import 'jspdf-autotable';
-import Modal from "react-modal";
 import Loader from '../Loader/Loader';
 import styles2 from './../Modals/ChangePasswordModal/ChangePasswordModal.module.css';
 import styles from './../ImageModal/ImageModal.module.css';
@@ -16,7 +14,7 @@ import translate from '../../util/translate';
 
 const PDFGenerator = ({isOpen, closeModal}) => {
     const { t } = useTranslation();
-    const {category, id} = useParams();
+    const {id} = useParams();
     const [advertisement, setAdvertisement] = useState({});
     const [views, setViews] = useState(0);
     const [authViews, setAuthViews] = useState(0);
@@ -66,8 +64,8 @@ const PDFGenerator = ({isOpen, closeModal}) => {
 
     const generatePDF = async () => {
         const translatedDescription = await translate(advertisement.description, localStorage.getItem('language'));
-        const blob = await pdf(<PDFStats favoriteCount={favoriteCount} name={advertisement.name} price={advertisement.price} description={translatedDescription} seller={advertisement.seller.email} createdAt={new Date(advertisement.createdAt).toLocaleDateString()} totalViews={views} authorized={authViews} guest={views - authViews} />).toBlob();
-        saveAs(blob, 'document.pdf');
+        const blob = await pdf(<PDFStats id={advertisement.id} favoriteCount={favoriteCount} name={advertisement.name} price={advertisement.price} description={translatedDescription} seller={advertisement.seller.email} createdAt={new Date(advertisement.createdAt).toLocaleDateString()} totalViews={views} authorized={authViews} guest={views - authViews} />).toBlob();
+        saveAs(blob, `${(advertisement.name).replace(" ", "_")}_stats.pdf`);
     };
 
     const handleBackgroundClick = e => {
@@ -87,63 +85,55 @@ const PDFGenerator = ({isOpen, closeModal}) => {
 
     return (
         <div className={styles.modal} onClick={handleBackgroundClick    }>
-        {/* <Modal
-            className={styles.changeModal}
-            ariaHideApp={false}
-            isOpen={isOpen}
-            onRequestClose={closeModal}
-            contentLabel="Details"
-        > */}
-    {/* <div className={styles.modalContent}> */}
-    <div className={styles2.changeModal}>
-        {/* <Link to={`/advertisements/${category}/${id}`}><button>Back</button></Link> */}
-        {/* <br /> */}
-        <button style={{height: '80px', background: "#DD9901"}} onClick={closeModal}>{t('Close')}</button>
-        <table id="my-table">
-        <tbody>
-            <tr>
-                <td>{t('Name')}</td>
-                <td>{advertisement.name}</td>
-            </tr>
-            <tr>
-                <td>{t('Price')}</td>
-                <td>€{advertisement.price}</td>
-            </tr>
-            <tr>
-                <td>{t('Description')}</td>
-                <td>{advertisement.description}</td>
-            </tr>
-            <tr>
-                <td>{t('Seller')}</td>
-                <td>{advertisement.seller.email}</td>
-            </tr>
-            <tr>
-                <td>{t('Created at')}</td>
-                <td>{new Date(advertisement.createdAt).toLocaleDateString()}</td>
-            </tr>
-            <tr>
-                <td>{t('Total views')}:</td>
-                <td>{views}</td>
-            </tr>
-            <tr>
-                <td>{t('Authorized users views')}:</td>
-                <td>{authViews}</td>
-            </tr>
-            <tr>
-                <td>{t('Guests views')}:</td>
-                <td>{views - authViews}</td>
-            </tr>
-            <tr>
-                <td>{t('Users count saved ads to favorite')}:</td>
-                <td>{favoriteCount}</td>
-            </tr>
-        </tbody>
-        </table>
-        <button style={{height: '80px'}} onClick={generatePDF}>{t('Download PDF')}</button>
-
-    </div>
-    {/* </Modal> */}
-    </div>
+            <div className={styles2.changeModal} style={{overflowY: "scroll"}}>
+                <button style={{height: '80px', background: "#DD9901"}} onClick={closeModal}>{t('Close')}</button>
+                <table id="my-table">
+                <tbody>
+                    <tr>
+                        <td>{t('Advertisement number')}</td>
+                        <td>{advertisement.id}</td>
+                    </tr>
+                    <tr>
+                        <td>{t('Name')}</td>
+                        <td>{advertisement.name}</td>
+                    </tr>
+                    <tr>
+                        <td>{t('Price')}</td>
+                        <td>€{advertisement.price}</td>
+                    </tr>
+                    <tr>
+                        <td>{t('Description')}</td>
+                        <td>{advertisement.description}</td>
+                    </tr>
+                    <tr>
+                        <td>{t('Seller')}</td>
+                        <td>{advertisement.seller.email}</td>
+                    </tr>
+                    <tr>
+                        <td>{t('Created at')}</td>
+                        <td>{new Date(advertisement.createdAt).toLocaleDateString()}</td>
+                    </tr>
+                    <tr>
+                        <td>{t('Total views')}:</td>
+                        <td>{views}</td>
+                    </tr>
+                    <tr>
+                        <td>{t('Authorized users views')}:</td>
+                        <td>{authViews}</td>
+                    </tr>
+                    <tr>
+                        <td>{t('Guests views')}:</td>
+                        <td>{views - authViews}</td>
+                    </tr>
+                    <tr>
+                        <td>{t('Users count saved ads to favorite')}:</td>
+                        <td>{favoriteCount}</td>
+                    </tr>
+                </tbody>
+                </table>
+                <button style={{height: '80px'}} onClick={generatePDF}>{t('Download PDF')}</button>
+            </div>
+        </div>
     );
 };
 

@@ -31,7 +31,8 @@ const ProfileStats = ({isOpen, closeModal}) => {
 
     const generatePDF = async () => {
         const blob = await pdf(<ProfilePDF data={data} title={userDetails.email} type='profile' />).toBlob();
-        saveAs(blob, 'document.pdf');
+        const name = (userDetails.email).split('@')[0];
+        saveAs(blob, `${name}_stats.pdf`);
     };
 
 

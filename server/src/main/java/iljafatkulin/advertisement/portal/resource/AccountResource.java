@@ -29,7 +29,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
-
 @RestController
 @RequestMapping("/api/accounts")
 @RequiredArgsConstructor
@@ -174,12 +173,11 @@ public class AccountResource {
             Map<String, Object> response = new HashMap<>();
             response.put("account", account);
             response.put("token", token);
-            // response.put("TESTTT", "9123S");
 
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             String errorMessage = e.getMessage();
-            HttpStatus status = HttpStatus.UNAUTHORIZED; // 401
+            HttpStatus status = HttpStatus.UNAUTHORIZED;
 
             return new ResponseEntity<>(errorMessage, status);
         }

@@ -52,6 +52,8 @@ i18n
           "Password": "Parole",
           "Sign In": "Pieteikties",
           "OR": "VAI",
+          "Advertisement number": "Sludinājuma numurs",
+          "Attribute name": "Atribūta nosaukums",
           "Email is required": "E-pasts ir nepieciešams",
           "Password is required": "Parole ir nepieciešama",
           "Create section": "Izveidot sadaļu",
@@ -101,7 +103,7 @@ i18n
           "Category statistics": "Kategorijas statistika",
           "Stats": "Statistika",
           "Section statistics": "Sadaļas statistika",
-          "Invalid email": "Nepareizi e-pasta formāts",
+          "Invalid email": "Nepareizs e-pasta formāts",
           "Password mismatch": "Paroles nesakrīt",
           "Password is required": "Parole ir nepieciešama",
         }

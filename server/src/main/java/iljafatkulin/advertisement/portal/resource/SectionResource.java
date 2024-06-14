@@ -1,7 +1,11 @@
 package iljafatkulin.advertisement.portal.resource;
 
+import iljafatkulin.advertisement.portal.dto.CategoryDTO;
+import iljafatkulin.advertisement.portal.dto.SectionDTO;
 import iljafatkulin.advertisement.portal.exception.SectionNotFoundException;
+import iljafatkulin.advertisement.portal.model.Category;
 import iljafatkulin.advertisement.portal.model.Section;
+import iljafatkulin.advertisement.portal.repositories.ProductsRepository;
 import iljafatkulin.advertisement.portal.request.SectionAddCategoryRequest;
 import iljafatkulin.advertisement.portal.request.SectionDeleteRequest;
 import iljafatkulin.advertisement.portal.request.SectionRenameRequest;
@@ -26,10 +30,27 @@ import java.util.List;
 public class SectionResource {
 
     private final SectionService sectionService;
+    private final ProductsRepository productsRepository;
 
     @GetMapping
-    public List<Section> index() {
-        return sectionService.getAllWithCategories();
+    public List<SectionDTO> index() {
+        List<Section> sections = sectionService.getAllWithCategories();
+        List<SectionDTO> sectionDTOS = new ArrayList<>();
+        for (Section section : sections) {
+            SectionDTO sectionDTO = new SectionDTO(section.getId(), section.getName(), 0, null);
+            for (Category category : section.getCategories()) {
+                long productCount = productsRepository.countByCategoryName(category.getName());
+                sectionDTO.setProductCount(sectionDTO.getProductCount() + productCount);
+                CategoryDTO categoryDTO = new CategoryDTO(category.getId(), category.getName(), productCount);
+
+                if(sectionDTO.getCategories() == null) {
+                    sectionDTO.setCategories(new ArrayList<>());
+                }
+                sectionDTO.getCategories().add(categoryDTO);
+            }
+            sectionDTOS.add(sectionDTO);
+        }
+        return sectionDTOS;
     }
 
     @GetMapping("/{id}")

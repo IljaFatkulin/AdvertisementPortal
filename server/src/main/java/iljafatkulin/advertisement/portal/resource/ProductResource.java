@@ -9,6 +9,7 @@ import iljafatkulin.advertisement.portal.dto.ProductDetailsDTO;
 import iljafatkulin.advertisement.portal.dto.EditedImageDTO;
 import iljafatkulin.advertisement.portal.model.*;
 import iljafatkulin.advertisement.portal.repositories.FavoriteRepository;
+import iljafatkulin.advertisement.portal.repositories.ProductViewRepository;
 import iljafatkulin.advertisement.portal.request.FormCreateProduct;
 import iljafatkulin.advertisement.portal.request.FormEditProduct;
 import iljafatkulin.advertisement.portal.service.AttributesService;
@@ -50,6 +51,7 @@ public class ProductResource {
     private final CategoriesService categoriesService;
     private final AttributesService attributesService;
     private final FavoriteRepository favoriteRepository;
+    private final ProductViewRepository productViewRepository;
 
     private final ObjectMapper objectMapper;
     private final Validator validator;
@@ -196,6 +198,14 @@ public class ProductResource {
 
     @PostMapping("/delete")
     public ResponseEntity<HttpStatus> delete(@RequestBody Map<String, Integer> request) {
+        List<ProductView> productViews = productViewRepository.findByProductId(request.get("id"));
+
+        // Delete the ProductView entities
+        for (ProductView productView : productViews) {
+            productViewRepository.delete(productView);
+        }
+
+        // Now you can delete the Product
         productsService.delete(request.get("id"));
 
         return ResponseEntity.ok(HttpStatus.OK);

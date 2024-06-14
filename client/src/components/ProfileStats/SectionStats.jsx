@@ -13,9 +13,11 @@ const SectionStats = ({isOpen, closeModal, section}) => {
     const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState(true);
     const [data, setData] = useState(null);
+    const lang = localStorage.getItem('language') || 'en';
 
-    useEffect(() => {
-        ProductViewService.getSectionStats(section)
+    const fetchStats = async () => {
+        const translatedSection = lang !== 'en' ? await translate(section, "en") : section;
+        ProductViewService.getSectionStats(translatedSection)
             .then(response => {
                 console.log(response.data)
                 setData(response.data)
@@ -24,12 +26,18 @@ const SectionStats = ({isOpen, closeModal, section}) => {
             }).finally(() => {
                 setIsLoading(false);
             });
+    }
+
+    useEffect(() => {
+        setIsLoading(true);
+        fetchStats();
     }, []);
 
     const generatePDF = async () => {
         const translatedSection = await translate(section, localStorage.getItem('language') || 'en');
         const blob = await pdf(<ProfilePDF data={data} title={translatedSection} type='section' />).toBlob();
-        saveAs(blob, 'document.pdf');
+
+        saveAs(blob, `${section.replace(" ", "_")}_stats.pdf`);
     };
 
 

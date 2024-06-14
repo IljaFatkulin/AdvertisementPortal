@@ -21,4 +21,6 @@ public interface ProductViewRepository extends JpaRepository<ProductView, Long> 
 
     Long countByProductIdInAndCreatedAtAfter(List<Integer> productIds, Date date);
     Long countByProductIdInAndCreatedAtAfterAndAuthorized(List<Integer> productIds, Date date, boolean authorized);
+
+    List<ProductView> findByProductId(long productId);
 }

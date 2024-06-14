@@ -34,7 +34,7 @@ const CategoryStats = ({isOpen, closeModal, category}) => {
         const translatedCategory = await translate(category, localStorage.getItem('language') || 'en');
 
         const blob = await pdf(<ProfilePDF data={data} title={translatedCategory} type='category' />).toBlob();
-        saveAs(blob, 'document.pdf');
+        saveAs(blob, `${category.replace(" ", "_")}_stats.pdf`);
     };
 
 
