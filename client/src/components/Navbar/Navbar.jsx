@@ -37,7 +37,7 @@ const Navbar = () => {
             <div className={styles.navbarMain}>
                 {/* <Link to={'/'} className={styles.link}>Home</Link> */}
                 <Link to={'/'} className={styles.link}>{t('Categories')}</Link>
-                <Link className={styles.link}>{t('About us')}</Link>
+                <Link to={'/about'} className={styles.link}>{t('About us')}</Link>
                 {isAuth && <Link to={'/favorite'} className={styles.link}>{t('Favorite')}</Link>}
                 <Link to={'/choose'} className={styles.link}>{t('Create advertisement')}</Link>
             </div>

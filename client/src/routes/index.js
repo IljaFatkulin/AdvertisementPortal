@@ -14,6 +14,7 @@ import Logout from "../components/Logout";
 import SectionView from "../pages/Category/View/SectionView";
 import PDFGenerator from "../components/PDFGenerator/PDFGenerator";
 import PDF from "../pages/PDF/PDF";
+import About from "../pages/About/About";
 
 export const commonRoutes = [
     {path: '/statistics/:category/:id', element: <PDFGenerator/>},
@@ -23,6 +24,7 @@ export const commonRoutes = [
 
     {path: '/advertisements/:category', element: <Advertisements/>},
     {path: '/advertisements/:category/:id', element: <AdvertisementView/>},
+    {path: '/about', element: <About />},
 ];
 
 

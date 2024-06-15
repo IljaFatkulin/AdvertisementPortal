@@ -105,7 +105,16 @@ i18n
           "Section statistics": "Sadaļas statistika",
           "Invalid email": "Nepareizs e-pasta formāts",
           "Password mismatch": "Paroles nesakrīt",
-          "Password is required": "Parole ir nepieciešama",
+          "Introduction": "Ievads",
+          "Our Mission": "Mūsu misija",
+          "Our Vision": "Mūsu redzējums",
+          "Welcome to Ads Marketplace - your one-stop solution for all advertising needs. At Ads Marketplace, we bridge the gap between businesses looking to advertise and platforms offering advertising space, making the process seamless, efficient, and effective.": "Laipni lūdzam Ads Marketplace - jūsu vienīgajā risinājumā visiem reklāmas vajadzībām. Ads Marketplace mēs savienojam uzņēmumus, kuri vēlas reklamēties, un platformas, kas piedāvā reklāmas vietu, padarot procesu vienkāršu, efektīvu un efektīvu.",
+          "Our mission is to revolutionize the advertising industry by providing a comprehensive and user-friendly portal that caters to all your advertising requirements. We aim to empower businesses of all sizes to reach their target audience effectively and affordably.": "Mūsu misija ir revolucionēt reklāmas nozari, nodrošinot visaptverošu un lietotājam draudzīgu portālu, kas apmierina visas jūsu reklamēšanas prasības. Mēs cenšamies dot iespēju visu izmēru uzņēmumiem efektīvi un pieejami sasniegt savu mērķauditoriju.",
+          "We envision a world where advertising is accessible, transparent, and measurable. By leveraging technology, we strive to create a marketplace that offers diverse advertising opportunities, ensuring businesses can find the perfect match for their marketing campaigns.": "Mēs iedomājamies pasauli, kur reklāma ir pieejama, pārredzama un mērāma. Izmantojot tehnoloģijas, mēs cenšamies izveidot tirgu, kas piedāvā dažādas reklāmas iespējas, nodrošinot, ka uzņēmumi var atrast ideālu atbilstību savām mārketinga kampaņām.",
+          "What We Offer": "Ko mēs piedāvājam",
+          "User-Friendly Interface: Our portal is designed to be intuitive and easy to navigate, ensuring a hassle-free experience for users.": "Lietotājam draudzīga saskarne: mūsu portāls ir izstrādāts tā, lai būtu intuitīvs un viegli pārvietojams, nodrošinot lietotājiem bezrūpīgu pieredzi.",
+          "Affordable Solutions: We offer competitive pricing models to suit businesses of all budgets.": "Pieejamas risinājumi: mēs piedāvājam konkurētspējīgus cenu modeļus, kas piemēroti visu budžetu uzņēmumiem.",
+          "Analytics and Reporting: Our advanced analytics tools help you track the performance of your ads in real-time.": "Analītika un atskaišu sagatavošana: mūsu uzlabotie analītikas rīki palīdz jums reāllaikā sekot līdzi jūsu reklāmu veiktspējai.",
         }
       }
     },
