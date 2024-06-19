@@ -30,7 +30,7 @@ const Categories = ({create}) => {
                     ...section,
                     name: await translate(section.name, lang),
                     value: section.name,
-                    categories: await Promise.all(section.categories.map(async category => ({
+                    categories: await Promise.all((section.categories || []).map(async category => ({
                         ...category,
                         name: await translate(category.name, lang),
                         value: category.name
